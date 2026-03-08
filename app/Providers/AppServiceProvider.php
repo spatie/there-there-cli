@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
 
         OpenApiCli::register(specPath: base_path('resources/openapi.yaml'))
             ->useOperationIds()
+            ->baseUrl(env('THERE_THERE_BASE_URL', 'https://there-there.app/api'))
             ->cache(ttl: 60 * 60 * 24)
             ->auth(fn () => app(CredentialStore::class)->getToken())
             ->onError(function (Response $response, Command $command) {

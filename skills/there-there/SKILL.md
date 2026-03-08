@@ -4,7 +4,7 @@ description: >-
   Manage There There helpdesk tickets, contacts, and channels using the
   there-there CLI. Use when the user wants to list, view, reply to, or manage
   tickets; assign team members; manage tags; view contacts; or interact with
-  therethere.app from the command line.
+  there-there.app from the command line.
 license: MIT
 metadata:
   author: spatie
@@ -13,7 +13,7 @@ metadata:
 
 # There There CLI
 
-The `there-there` CLI lets you manage [There There](https://therethere.app) helpdesk tickets from the terminal. Every There There API endpoint has a corresponding command.
+The `there-there` CLI lets you manage [There There](https://there-there.app) helpdesk tickets from the terminal. Every There There API endpoint has a corresponding command.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ there-there login
 there-there logout
 ```
 
-Get your API token from your workspace settings at https://therethere.app/settings/api-tokens.
+Get your API token from your workspace settings at https://there-there.app/settings/api-tokens.
 
 If any command returns a 401 error, the token is invalid or expired. Run `there-there login` again.
 

@@ -2,7 +2,7 @@
     "name": "spatie/there-there-cli",
     "description": "A standalone CLI tool for the There There helpdesk.",
     "keywords": ["there-there", "spatie", "helpdesk", "cli", "support"],
-    "homepage": "https://therethere.app",
+    "homepage": "https://there-there.app",
     "type": "project",
     "license": "MIT",
     "support": {

@@ -27,7 +27,7 @@ trait RendersBanner
 
         $output->writeln('');
 
-        $tagline = ' There There :: AI-powered helpdesk :: therethere.app ';
+        $tagline = ' There There :: AI-powered helpdesk :: there-there.app ';
         $output->writeln("\e[48;5;{$gradient[0]}m\e[30m\e[1m{$tagline}\e[0m");
 
         $output->writeln('');

@@ -2,7 +2,7 @@
 
 ## Project overview
 
-A standalone CLI tool for [There There](https://therethere.app) built on Laravel Zero. Uses `spatie/laravel-openapi-cli` to auto-generate artisan commands from the There There OpenAPI spec.
+A standalone CLI tool for [There There](https://there-there.app) built on Laravel Zero. Uses `spatie/laravel-openapi-cli` to auto-generate artisan commands from the There There OpenAPI spec.
 
 - **Package**: `spatie/there-there-cli`
 - **Binary**: `there-there`
