@@ -19,9 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(DescriberContract::class, ThereThereDescriber::class);
 
-        $specPath = env('OPENAPI_SPEC_PATH', 'https://therethere.app/downloads/openapi.yaml');
-
-        OpenApiCli::register(specPath: $specPath)
+        OpenApiCli::register(specPath: base_path('resources/openapi.yaml'))
             ->useOperationIds()
             ->cache(ttl: 60 * 60 * 24)
             ->auth(fn () => app(CredentialStore::class)->getToken())
