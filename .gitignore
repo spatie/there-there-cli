@@ -1,0 +1,10 @@
+/vendor
+!/builds
+/build
+/coverage
+/.idea
+/.vscode
+/.fleet
+.phpunit.result.cache
+.phpunit.cache
+phpunit.xml
