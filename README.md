@@ -1,41 +1,106 @@
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" alt="Laravel Zero Logo" />
-</p>
+# There There CLI
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://github.com/laravel-zero/laravel-zero/actions/workflows/tests.yml/badge.svg" alt="Build Status" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License" /></a>
-</p>
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/there-there-cli.svg?style=flat-square)](https://packagist.org/packages/spatie/there-there-cli)
+[![Total Downloads](https://img.shields.io/packagist/dt/spatie/there-there-cli.svg?style=flat-square)](https://packagist.org/packages/spatie/there-there-cli)
 
-Laravel Zero was created by [Nuno Maduro](https://github.com/nunomaduro) and [Owen Voke](https://github.com/owenvoke), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+A command-line tool for [There There](https://there-there.app), interact with the There There API from your terminal.
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
-- Follow the creator Nuno Maduro:
-    - YouTube: **[youtube.com/@nunomaduro](https://www.youtube.com/@nunomaduro)** — Videos every weekday
-    - Twitch: **[twitch.tv/enunomaduro](https://www.twitch.tv/enunomaduro)** — Streams (almost) every weekday
-    - Twitter / X: **[x.com/enunomaduro](https://x.com/enunomaduro)**
-    - LinkedIn: **[linkedin.com/in/nunomaduro](https://www.linkedin.com/in/nunomaduro)**
-    - Instagram: **[instagram.com/enunomaduro](https://www.instagram.com/enunomaduro)**
-    - Tiktok: **[tiktok.com/@enunomaduro](https://www.tiktok.com/@enunomaduro)**
+Full documentation is available at [there-there.com](https://there-there.com).
 
-------
+## Installation
 
-## Documentation
+```bash
+composer global require spatie/there-there-cli
+```
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+Make sure Composer's global bin directory is in your `PATH`. You can find the path with:
 
-## Support the development
-**Do you like this project? Support it by donating**
+```bash
+composer global config bin-dir --absolute
+```
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
+## Updating
+
+```bash
+composer global require spatie/there-there-cli
+```
+
+## Usage
+
+### Authentication
+
+```bash
+# Log in with your There There API token
+there-there login
+
+# Log out
+there-there logout
+```
+
+Get your API token at [there-there.app](https://there-there.app).
+
+### Commands
+
+Every There There API endpoint has a corresponding command. Run `there-there <command> --help` for details on a specific command.
+
+```bash
+there-there list-tickets
+there-there show-ticket --ticket-id=<id>
+there-there reply-to-ticket --ticket-id=<id> --field body="Your reply here"
+there-there forward-ticket --ticket-id=<id> --field to="email@example.com"
+there-there add-note-to-ticket --ticket-id=<id> --field body="Internal note"
+
+there-there update-ticket-status --ticket-id=<id> --field status=closed
+there-there update-ticket-assignee --ticket-id=<id> --field member_id=<member-id>
+there-there update-ticket-team --ticket-id=<id> --field team_id=<team-id>
+
+there-there add-tag-to-ticket --ticket-id=<id> --field tag_id=<tag-id>
+there-there remove-tag-from-ticket --ticket-id=<id> --tag-id=<tag-id>
+
+there-there list-ticket-activities --ticket-id=<id>
+
+there-there list-contacts
+there-there show-contact --contact-id=<id>
+
+there-there list-channels
+there-there list-members
+there-there list-tags
+there-there get-me
+```
+
+## Agent Skill
+
+This repository includes an [agent skill](https://skills.sh) that teaches coding agents how to use the There There CLI.
+
+### Install
+
+```bash
+there-there install-skill
+```
+
+## Testing
+
+```bash
+composer test
+```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Contributing
+
+Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
+
+## Security Vulnerabilities
+
+Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+
+## Credits
+
+- [Spatie](https://github.com/spatie)
+- [All Contributors](../../contributors)
 
 ## License
 
-Laravel Zero is an open-source software licensed under the MIT license.
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
