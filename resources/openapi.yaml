@@ -310,6 +310,35 @@ paths:
           description: Only show unassigned tickets
           schema:
             type: boolean
+        - name: q
+          in: query
+          description: Semantic search query. Uses AI embeddings to find tickets by meaning across subjects, summaries, and messages. Results are ordered by relevance.
+          schema:
+            type: string
+        - name: filter[search]
+          in: query
+          description: Full-text keyword search across ticket subjects, messages, and contact info
+          schema:
+            type: string
+        - name: filter[assigned_user_id]
+          in: query
+          description: Filter by specific assignee user ID
+          schema:
+            type: integer
+        - name: filter[created_after]
+          in: query
+          description: Only tickets created on or after this date (ISO 8601)
+          schema:
+            type: string
+            format: date
+            example: '2026-01-01'
+        - name: filter[created_before]
+          in: query
+          description: Only tickets created on or before this date (ISO 8601)
+          schema:
+            type: string
+            format: date
+            example: '2026-03-01'
         - name: sort
           in: query
           description: 'Sort field. Prefix with - for descending. Allowed: created_at, updated_at, last_activity_at'

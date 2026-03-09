@@ -37,6 +37,11 @@ there-there list-tickets
 | `--filter-channel-ids` | string | Filter by channel IDs (comma separated) |
 | `--filter-assigned-to-me` | boolean | Only tickets assigned to the authenticated user |
 | `--filter-unassigned` | boolean | Only unassigned tickets |
+| `--q` | string | Semantic search query. Uses AI embeddings to find tickets by meaning. Results ordered by relevance. |
+| `--filter-search` | string | Full-text keyword search across subjects, messages, and contact info |
+| `--filter-assigned-user-id` | integer | Filter by specific assignee user ID |
+| `--filter-created-after` | string | Only tickets created on or after this date (ISO 8601, e.g. `2026-01-01`) |
+| `--filter-created-before` | string | Only tickets created on or before this date (ISO 8601, e.g. `2026-03-01`) |
 | `--sort` | string | Sort field. Prefix with `-` for descending. Allowed: `created_at`, `updated_at`, `last_activity_at` |
 | `--per-page` | integer | Items per page (max 100, default 25) |
 | `--page` | integer | Page number (default: 1) |

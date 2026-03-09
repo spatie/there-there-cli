@@ -45,6 +45,9 @@ Every There There API endpoint has a corresponding command. Run `there-there <co
 
 ```bash
 there-there list-tickets
+there-there list-tickets --q="refund request"
+there-there list-tickets --filter-search="billing"
+there-there list-tickets --filter-created-after=2026-01-01
 there-there show-ticket --ticket-id=<id>
 there-there reply-to-ticket --ticket-id=<id> --field body="Your reply here"
 there-there forward-ticket --ticket-id=<id> --field to="email@example.com"

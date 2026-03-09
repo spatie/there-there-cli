@@ -55,6 +55,59 @@ Repeat until all pages are triaged. Use `meta.last_page` from the response to kn
 
 ---
 
+## Search tickets
+
+### Semantic search (AI-powered)
+
+Find tickets by meaning, not just keywords. Useful for finding tickets about a topic even when exact words differ.
+
+```bash
+# Find tickets about refunds
+there-there list-tickets --q="how do I get a refund"
+
+# Find billing-related open tickets
+there-there list-tickets --q="billing problem" --filter-status=open
+
+# Find recent tickets about a topic
+there-there list-tickets --q="password reset" --filter-created-after=2026-01-01
+```
+
+Semantic search requires AI to be enabled for the workspace. Results are ordered by relevance.
+
+### Full-text keyword search
+
+Search for exact keywords across ticket subjects, messages, and contact info.
+
+```bash
+# Search by keyword
+there-there list-tickets --filter-search="refund"
+
+# Search by email
+there-there list-tickets --filter-search="john@example.com" --filter-status=open
+```
+
+### Filter by date range
+
+```bash
+# Tickets from January 2026
+there-there list-tickets --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
+
+# Recent tickets
+there-there list-tickets --filter-created-after=2026-03-01 --filter-status=open
+```
+
+### Filter by specific assignee
+
+```bash
+# List workspace members to find user IDs
+there-there list-members
+
+# Filter by assignee
+there-there list-tickets --filter-assigned-user-id=5
+```
+
+---
+
 ## Respond to a ticket
 
 ### Step 1: View the ticket

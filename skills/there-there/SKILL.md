@@ -80,6 +80,21 @@ there-there list-tickets --sort=-updated_at
 
 # View a specific ticket with messages and activities
 there-there show-ticket --ticket=01HX9F3K2M...
+
+# Semantic search (AI-powered, finds tickets by meaning)
+there-there list-tickets --q="how do I get a refund"
+
+# Full-text keyword search
+there-there list-tickets --filter-search="refund"
+
+# Filter by specific assignee
+there-there list-tickets --filter-assigned-user-id=5
+
+# Filter by date range
+there-there list-tickets --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
+
+# Combine search with filters
+there-there list-tickets --q="billing issue" --filter-status=open --filter-created-after=2026-01-01
 ```
 
 ### Ticket actions
