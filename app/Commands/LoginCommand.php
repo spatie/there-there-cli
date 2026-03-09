@@ -19,7 +19,7 @@ class LoginCommand extends Command
     {
         $this->renderBanner($this->output);
 
-        $baseUrl = env('THERE_THERE_BASE_URL', 'https://there-there.app/api');
+        $baseUrl = $credentials->getBaseUrl();
         $appUrl = preg_replace('#/api$#', '', $baseUrl);
 
         $this->line("You can generate a token from your workspace settings at <href={$appUrl}/settings/api-tokens>{$appUrl}/settings/api-tokens</>");
