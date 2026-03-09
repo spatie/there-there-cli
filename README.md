@@ -84,6 +84,26 @@ there-there install-skill
 composer test
 ```
 
+## Releasing a new version
+
+1. **Build the PHAR**:
+
+    ```bash
+    php there-there app:build there-there --build-version=1.x.x
+    ```
+
+2. **Commit and push**:
+
+    ```bash
+    git add builds/there-there
+    git commit -m "Release v1.x.x"
+    git push origin main
+    ```
+
+3. **Create a release** in the GitHub UI.
+
+Users update with `composer global require spatie/there-there-cli`.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
