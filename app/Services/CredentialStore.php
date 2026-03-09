@@ -33,6 +33,30 @@ class CredentialStore
         $this->set('base_url', $url);
     }
 
+    public function getUserName(): ?string
+    {
+        return $this->readConfig()['user_name'] ?? null;
+    }
+
+    public function getWorkspaceName(): ?string
+    {
+        return $this->readConfig()['workspace_name'] ?? null;
+    }
+
+    public function setUser(string $name, string $workspace): void
+    {
+        $data = $this->readConfig();
+        $data['user_name'] = $name;
+        $data['workspace_name'] = $workspace;
+
+        $this->ensureConfigDirectoryExists();
+
+        file_put_contents(
+            $this->configPath,
+            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+        );
+    }
+
     private function set(string $key, string $value): void
     {
         $this->ensureConfigDirectoryExists();

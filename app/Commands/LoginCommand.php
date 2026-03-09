@@ -48,10 +48,11 @@ class LoginCommand extends Command
             return self::FAILURE;
         }
 
-        $credentials->setToken($token);
-
         $name = $response->json('user.name', 'unknown');
         $workspace = $response->json('workspace.name', 'unknown');
+
+        $credentials->setToken($token);
+        $credentials->setUser($name, $workspace);
 
         $this->newLine();
         $this->info("  Successfully logged in as {$name} ({$workspace})  ");

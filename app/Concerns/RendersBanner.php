@@ -2,12 +2,15 @@
 
 namespace App\Concerns;
 
+use App\Services\CredentialStore;
 use Symfony\Component\Console\Output\OutputInterface;
 
 trait RendersBanner
 {
     public function renderBanner(OutputInterface $output): void
     {
+        $credentials = app(CredentialStore::class);
+
         $lines = [
             '  ████████╗ ██╗  ██╗ ███████╗ ██████╗  ███████╗',
             '  ╚══██╔══╝ ██║  ██║ ██╔════╝ ██╔══██╗ ██╔════╝',
@@ -27,11 +30,17 @@ trait RendersBanner
 
         $output->writeln('');
 
-        $baseUrl = env('THERE_THERE_BASE_URL', 'https://there-there.app/api');
-        $host = parse_url($baseUrl, PHP_URL_HOST) ?? 'there-there.app';
+        $host = parse_url($credentials->getBaseUrl(), PHP_URL_HOST) ?? 'there-there.app';
 
         $tagline = " There There :: AI-powered helpdesk :: {$host} ";
         $output->writeln("\e[48;5;{$gradient[0]}m\e[30m\e[1m{$tagline}\e[0m");
+
+        $userName = $credentials->getUserName();
+        $workspaceName = $credentials->getWorkspaceName();
+
+        if ($userName && $workspaceName) {
+            $output->writeln("\e[38;5;245m  Logged in as {$userName} ({$workspaceName})\e[0m");
+        }
 
         $output->writeln('');
     }
