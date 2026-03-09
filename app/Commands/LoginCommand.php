@@ -35,7 +35,10 @@ class LoginCommand extends Command
         }
 
         try {
-            $response = Http::withToken($token)->get("{$baseUrl}/me");
+            $response = Http::withToken($token)
+                ->accept('application/json')
+                ->withOptions(['allow_redirects' => true, 'verify' => false])
+                ->get("{$baseUrl}/me");
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             $this->error('Could not connect to There There. Please check your internet connection.');
 
