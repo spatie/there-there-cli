@@ -45,7 +45,7 @@ there-there login
 there-there logout
 ```
 
-Get your API token from your workspace settings at https://there-there.app/settings/api-tokens.
+Get your API token from your workspace settings at https://there-there.app/app/settings/user/api-tokens.
 
 If any command returns a 401 error, the token is invalid or expired. Run `there-there login` again.
 
