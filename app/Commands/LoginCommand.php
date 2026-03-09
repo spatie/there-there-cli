@@ -19,7 +19,10 @@ class LoginCommand extends Command
     {
         $this->renderBanner($this->output);
 
-        $this->line('You can generate a token from your workspace settings at <href=https://there-there.app/settings/api-tokens>https://there-there.app/settings/api-tokens</>');
+        $baseUrl = env('THERE_THERE_BASE_URL', 'https://there-there.app/api');
+        $appUrl = preg_replace('#/api$#', '', $baseUrl);
+
+        $this->line("You can generate a token from your workspace settings at <href={$appUrl}/settings/api-tokens>{$appUrl}/settings/api-tokens</>");
         $this->newLine();
 
         $token = $this->secret('Enter your API token');
@@ -31,7 +34,7 @@ class LoginCommand extends Command
         }
 
         try {
-            $response = Http::withToken($token)->get('https://there-there.app/api/me');
+            $response = Http::withToken($token)->get("{$baseUrl}/me");
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             $this->error('Could not connect to There There. Please check your internet connection.');
 

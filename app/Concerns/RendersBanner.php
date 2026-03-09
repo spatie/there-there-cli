@@ -27,7 +27,10 @@ trait RendersBanner
 
         $output->writeln('');
 
-        $tagline = ' There There :: AI-powered helpdesk :: there-there.app ';
+        $baseUrl = env('THERE_THERE_BASE_URL', 'https://there-there.app/api');
+        $host = parse_url($baseUrl, PHP_URL_HOST) ?? 'there-there.app';
+
+        $tagline = " There There :: AI-powered helpdesk :: {$host} ";
         $output->writeln("\e[48;5;{$gradient[0]}m\e[30m\e[1m{$tagline}\e[0m");
 
         $output->writeln('');
