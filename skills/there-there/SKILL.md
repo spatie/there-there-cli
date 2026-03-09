@@ -2,9 +2,9 @@
 name: there-there
 description: >-
   Manage There There helpdesk tickets, contacts, and channels using the
-  there-there CLI. Use when the user wants to list, view, reply to, or manage
-  tickets; assign team members; manage tags; view contacts; or interact with
-  there-there.app from the command line.
+  there-there CLI. Use when the user wants to list, view, reply to, search,
+  or manage tickets; assign team members; manage tags; view contacts; or
+  interact with there-there.app from the command line.
 license: MIT
 metadata:
   author: spatie
@@ -186,6 +186,32 @@ there-there reply-to-ticket --ticket=ULID --field body="<p>Your reply here</p>"
 
 # 4. Close resolved tickets
 there-there update-ticket-status --ticket=ULID --field status=closed
+```
+
+### Searching tickets
+
+The `list-tickets` command supports two types of search plus date and assignee filters:
+
+- **`--q`** (semantic search): Uses AI embeddings to find tickets by meaning, not just keywords. Matches across subjects, summaries, and message content. Results are ordered by relevance. Requires AI to be enabled for the workspace (returns 422 if not). Can be combined with all other filters.
+- **`--filter-search`** (full-text search): Keyword search across ticket subjects, messages, and contact info. Faster than semantic search, good for finding exact terms or email addresses.
+- **`--filter-assigned-user-id`**: Filter by a specific user ID (use `list-members` to find IDs). Different from `--filter-assigned-to-me` which uses the authenticated user.
+- **`--filter-created-after`**: Only return tickets created on or after this date. ISO 8601 format (e.g. `2026-01-01`).
+- **`--filter-created-before`**: Only return tickets created on or before this date. ISO 8601 format (e.g. `2026-03-01`).
+
+All filters can be combined. When `--q` is used without an explicit `--sort`, results are ordered by relevance. When `--q` is used with `--sort`, the explicit sort takes precedence.
+
+```bash
+# Semantic search for tickets about a topic
+there-there list-tickets --q="how do I get a refund"
+
+# Full-text search for a keyword
+there-there list-tickets --filter-search="invoice"
+
+# Combine semantic search with filters
+there-there list-tickets --q="billing issue" --filter-status=open --filter-created-after=2026-01-01
+
+# Tickets from a specific user in a date range
+there-there list-tickets --filter-assigned-user-id=5 --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
 ```
 
 ### Bulk operations
