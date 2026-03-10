@@ -12,8 +12,9 @@ A standalone CLI tool for [There There](https://there-there.app) built on Larave
 
 - **Laravel Zero 12** — PHP CLI micro-framework
 - **spatie/laravel-openapi-cli** — reads `resources/openapi.yaml` and registers one command per API endpoint using `operationId`-based naming
-- **CredentialStore** (`app/Services/CredentialStore.php`) — reads/writes API token to `~/.there-there/config.json`
+- **CredentialStore** (`app/Services/CredentialStore.php`) — reads/writes API tokens and profiles to `~/.there-there/config.json`
 - **LoginCommand / LogoutCommand** — custom commands (not from OpenAPI spec) for auth flow
+- **Profiles** — multiple workspaces supported via named profiles. Config stores profiles under a `profiles` key with a `default_profile` pointer. All commands accept `--profile` (resolved from argv in CredentialStore constructor).
 
 ## Key files
 

@@ -2,6 +2,72 @@
 
 Complete reference for all `there-there` CLI commands. Every command outputs JSON.
 
+## Global options
+
+All commands accept these options:
+
+| Option | Description |
+|---|---|
+| `--profile` | Use a specific profile instead of the default |
+
+## Profiles
+
+### profiles
+
+List all configured profiles. The active default profile is marked with `*`.
+
+```bash
+there-there profiles
+```
+
+### use
+
+Switch the default profile.
+
+```bash
+there-there use {profile}
+```
+
+**Required arguments:**
+
+| Argument | Description |
+|---|---|
+| `profile` | Name of the profile to switch to |
+
+### login
+
+Store an API token. Automatically creates a profile named after the workspace.
+
+```bash
+there-there login
+there-there login --profile=spatie
+```
+
+**Optional parameters:**
+
+| Parameter | Description |
+|---|---|
+| `--profile` | Profile name to store credentials under (defaults to slugified workspace name) |
+
+### logout
+
+Remove stored credentials.
+
+```bash
+there-there logout
+there-there logout --profile=spatie
+there-there logout --all
+```
+
+**Optional parameters:**
+
+| Parameter | Description |
+|---|---|
+| `--profile` | Remove a specific profile |
+| `--all` | Remove all profiles |
+
+---
+
 ## User & Workspace
 
 ### get-me

@@ -15,7 +15,9 @@ class UseLocalCommand extends Command
     {
         $credentials->setBaseUrl('https://there-there.test/api');
 
-        $this->info('Switched to local environment (https://there-there.test/api)');
+        $profileName = $credentials->getActiveProfileName();
+
+        $this->info("Switched to local environment (https://there-there.test/api) for profile \"{$profileName}\".");
         $this->line('Run `there-there login` to authenticate with your local instance.');
 
         return self::SUCCESS;

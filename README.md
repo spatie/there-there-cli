@@ -30,14 +30,41 @@ composer global require spatie/there-there-cli
 ### Authentication
 
 ```bash
-# Log in with your There There API token
+# Log in (automatically creates a profile named after your workspace)
 there-there login
 
-# Log out
+# Log in with a specific profile name
+there-there login --profile=spatie
+
+# Log out the active profile
 there-there logout
+
+# Log out a specific profile
+there-there logout --profile=spatie
 ```
 
 Get your API token at [there-there.app](https://there-there.app).
+
+### Profiles
+
+If you have multiple workspaces, you can store credentials for each one in a separate profile.
+
+```bash
+# Log in to your first workspace
+there-there login --profile=spatie
+
+# Log in to your second workspace
+there-there login --profile=ohdear
+
+# List all profiles
+there-there profiles
+
+# Switch the default profile
+there-there use spatie
+
+# Run a single command against a different profile
+there-there list-tickets --profile=ohdear
+```
 
 ### Commands
 

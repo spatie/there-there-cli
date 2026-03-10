@@ -5,13 +5,14 @@ namespace App\Commands;
 use App\Concerns\RendersBanner;
 use App\Services\CredentialStore;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
 {
     use RendersBanner;
 
-    protected $signature = 'login';
+    protected $signature = 'login {--profile= : Profile name to store credentials under}';
 
     protected $description = 'Store your There There API token for authentication';
 
@@ -54,11 +55,16 @@ class LoginCommand extends Command
         $name = $response->json('user.name', 'unknown');
         $workspace = $response->json('workspace.name', 'unknown');
 
+        $profileName = $this->option('profile') ?? Str::slug($workspace);
+
+        $credentials->setActiveProfile($profileName);
         $credentials->setToken($token);
         $credentials->setUser($name, $workspace);
+        $credentials->setDefaultProfile($profileName);
 
         $this->newLine();
         $this->info("  Successfully logged in as {$name} ({$workspace})  ");
+        $this->line("  Profile: <comment>{$profileName}</comment>");
 
         return self::SUCCESS;
     }

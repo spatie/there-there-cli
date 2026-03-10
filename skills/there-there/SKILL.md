@@ -38,16 +38,40 @@ composer global config bin-dir --absolute
 ## Authentication
 
 ```bash
-# Log in (you'll be prompted for your API token)
+# Log in (automatically creates a profile named after your workspace)
 there-there login
 
-# Log out
+# Log in with a specific profile name
+there-there login --profile=spatie
+
+# Log out the active profile
 there-there logout
 ```
 
 Get your API token from your workspace settings at https://there-there.app/app/settings/user/api-tokens.
 
 If any command returns a 401 error, the token is invalid or expired. Run `there-there login` again.
+
+## Profiles
+
+The CLI supports multiple profiles for users with access to multiple workspaces.
+
+```bash
+# Log in to multiple workspaces
+there-there login --profile=spatie
+there-there login --profile=ohdear
+
+# List all profiles
+there-there profiles
+
+# Switch the default profile
+there-there use spatie
+
+# Run a single command against a different profile
+there-there list-tickets --profile=ohdear
+```
+
+When logging in without `--profile`, the profile is automatically named after the workspace (slugified). All commands accept `--profile` to override the active profile for that invocation.
 
 ## Quick command reference
 

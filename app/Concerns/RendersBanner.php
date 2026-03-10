@@ -39,7 +39,8 @@ trait RendersBanner
         $workspaceName = $credentials->getWorkspaceName();
 
         if ($userName && $workspaceName) {
-            $output->writeln("\e[38;5;245m  Logged in as {$userName} ({$workspaceName})\e[0m");
+            $profileName = $credentials->getActiveProfileName();
+            $output->writeln("\e[38;5;245m  Logged in as {$userName} ({$workspaceName}) [{$profileName}]\e[0m");
         }
 
         $output->writeln('');

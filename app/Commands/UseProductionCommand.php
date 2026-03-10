@@ -15,7 +15,9 @@ class UseProductionCommand extends Command
     {
         $credentials->setBaseUrl('https://there-there.app/api');
 
-        $this->info('Switched to production environment (https://there-there.app/api)');
+        $profileName = $credentials->getActiveProfileName();
+
+        $this->info("Switched to production environment (https://there-there.app/api) for profile \"{$profileName}\".");
         $this->line('Run `there-there login` to authenticate with production.');
 
         return self::SUCCESS;

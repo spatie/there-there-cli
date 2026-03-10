@@ -2,6 +2,27 @@
 
 Detailed workflows for common There There CLI tasks.
 
+## Working with multiple workspaces
+
+If you manage tickets across multiple workspaces, set up a profile for each.
+
+```bash
+# Log in to each workspace
+there-there login --profile=spatie
+there-there login --profile=ohdear
+
+# Check which profiles you have
+there-there profiles
+
+# Switch your default workspace
+there-there use spatie
+
+# Or run a one-off command against a specific workspace
+there-there list-tickets --profile=ohdear
+```
+
+---
+
 ## Ticket triage
 
 Systematically work through open tickets, review them, and take action.
