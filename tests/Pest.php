@@ -1,6 +1,9 @@
 <?php
 
-uses(Tests\TestCase::class)->in('Feature');
+use App\Services\CredentialStore;
+use Tests\TestCase;
+
+uses(TestCase::class)->in('Feature');
 
 uses()->afterEach(function () {
     if (! isset($this->configPath)) {
@@ -24,7 +27,7 @@ uses()->afterEach(function () {
     rmdir($directory);
 })->in('Feature', 'Unit');
 
-function makeTempCredentialStore(): App\Services\CredentialStore
+function makeTempCredentialStore(): CredentialStore
 {
     $tempDir = sys_get_temp_dir().'/there-there-test-'.uniqid();
     mkdir($tempDir, 0755, true);
@@ -33,5 +36,5 @@ function makeTempCredentialStore(): App\Services\CredentialStore
 
     test()->configPath = $configPath;
 
-    return new App\Services\CredentialStore($configPath);
+    return new CredentialStore($configPath);
 }
