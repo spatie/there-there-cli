@@ -2,33 +2,6 @@
 
 use App\Services\CredentialStore;
 
-beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir().'/there-there-test-'.uniqid();
-    mkdir($this->tempDir, 0755, true);
-
-    $this->configPath = $this->tempDir.'/config.json';
-
-    $this->credentials = new class($this->configPath) extends CredentialStore
-    {
-        public function __construct(private string $testConfigPath)
-        {
-            // Skip parent constructor to avoid argv parsing and real config
-        }
-
-        // Override readConfig and writeConfig using reflection is complex,
-        // so we'll use a custom approach
-    };
-});
-
-afterEach(function () {
-    if (file_exists($this->configPath)) {
-        unlink($this->configPath);
-    }
-    if (is_dir($this->tempDir)) {
-        rmdir($this->tempDir);
-    }
-});
-
 it('can list profiles', function () {
     $credentials = mock(CredentialStore::class);
     $credentials->shouldReceive('listProfiles')->once()->andReturn([

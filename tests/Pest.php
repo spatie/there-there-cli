@@ -1,45 +1,37 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Test Case
-|--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
-|
-*/
-
 uses(Tests\TestCase::class)->in('Feature');
 
-/*
-|--------------------------------------------------------------------------
-| Expectations
-|--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
-*/
+uses()->afterEach(function () {
+    if (! isset($this->configPath)) {
+        return;
+    }
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+    if (file_exists($this->configPath)) {
+        unlink($this->configPath);
+    }
 
-/*
-|--------------------------------------------------------------------------
-| Functions
-|--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
-*/
+    $directory = dirname($this->configPath);
 
-function something(): void
+    if (! is_dir($directory)) {
+        return;
+    }
+
+    if (! str_contains($directory, 'there-there-test-')) {
+        return;
+    }
+
+    rmdir($directory);
+})->in('Feature', 'Unit');
+
+function makeTempCredentialStore(): App\Services\CredentialStore
 {
-    // ..
+    $tempDir = sys_get_temp_dir().'/there-there-test-'.uniqid();
+    mkdir($tempDir, 0755, true);
+
+    $configPath = $tempDir.'/config.json';
+
+    test()->configPath = $configPath;
+
+    return new App\Services\CredentialStore($configPath);
 }

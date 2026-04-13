@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Concerns\RendersBanner;
 use App\Services\CredentialStore;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -40,7 +41,7 @@ class LoginCommand extends Command
                 ->accept('application/json')
                 ->withOptions(['allow_redirects' => true, 'verify' => false])
                 ->get("{$baseUrl}/me");
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             $this->error('Could not connect to There There. Please check your internet connection.');
 
             return self::FAILURE;

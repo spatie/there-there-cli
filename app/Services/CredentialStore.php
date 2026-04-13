@@ -8,11 +8,14 @@ class CredentialStore
 
     private ?string $activeProfile = null;
 
-    public function __construct()
+    public function __construct(?string $configPath = null)
     {
-        $home = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? '';
-
-        $this->configPath = "{$home}/.there-there/config.json";
+        if ($configPath !== null) {
+            $this->configPath = $configPath;
+        } else {
+            $home = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? '';
+            $this->configPath = "{$home}/.there-there/config.json";
+        }
 
         $this->activeProfile = $this->resolveProfileFromArgv();
     }
@@ -56,23 +59,15 @@ class CredentialStore
 
     public function setWorkspaceId(int $workspaceId): void
     {
-        $profileName = $this->getActiveProfileName();
-
-        $data = $this->readConfig();
-        $data['profiles'][$profileName]['workspace_id'] = $workspaceId;
-
-        $this->writeConfig($data);
+        $this->mergeProfileValues(['workspace_id' => $workspaceId]);
     }
 
     public function setUser(string $name, string $workspace): void
     {
-        $profileName = $this->getActiveProfileName();
-
-        $data = $this->readConfig();
-        $data['profiles'][$profileName]['user_name'] = $name;
-        $data['profiles'][$profileName]['workspace_name'] = $workspace;
-
-        $this->writeConfig($data);
+        $this->mergeProfileValues([
+            'user_name' => $name,
+            'workspace_name' => $workspace,
+        ]);
     }
 
     public function getActiveProfileName(): string
@@ -128,7 +123,7 @@ class CredentialStore
         $data = $this->readConfig();
         unset($data['profiles'][$profileName]);
 
-        if ($data['default_profile'] === $profileName) {
+        if (($data['default_profile'] ?? null) === $profileName) {
             $remaining = array_keys($data['profiles'] ?? []);
             $data['default_profile'] = $remaining[0] ?? 'default';
         }
@@ -138,12 +133,7 @@ class CredentialStore
 
     public function flushAll(): void
     {
-        $this->ensureConfigDirectoryExists();
-
-        file_put_contents(
-            $this->configPath,
-            json_encode((object) [], JSON_PRETTY_PRINT),
-        );
+        $this->writeConfig([]);
     }
 
     private function resolveProfileFromArgv(): ?string
@@ -174,10 +164,19 @@ class CredentialStore
 
     private function setProfileValue(string $key, string $value): void
     {
+        $this->mergeProfileValues([$key => $value]);
+    }
+
+    /** @param  array<string, mixed>  $values */
+    private function mergeProfileValues(array $values): void
+    {
         $profileName = $this->getActiveProfileName();
 
         $data = $this->readConfig();
-        $data['profiles'][$profileName][$key] = $value;
+        $data['profiles'][$profileName] = array_merge(
+            $data['profiles'][$profileName] ?? [],
+            $values,
+        );
 
         if (! isset($data['default_profile'])) {
             $data['default_profile'] = $profileName;
@@ -194,6 +193,8 @@ class CredentialStore
             $this->configPath,
             json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
         );
+
+        @chmod($this->configPath, 0600);
     }
 
     private function ensureConfigDirectoryExists(): void

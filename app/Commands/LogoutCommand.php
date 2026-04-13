@@ -21,8 +21,10 @@ class LogoutCommand extends Command
             return self::SUCCESS;
         }
 
-        if ($this->option('profile')) {
-            $credentials->setActiveProfile($this->option('profile'));
+        $profileOption = $this->option('profile');
+
+        if ($profileOption) {
+            $credentials->setActiveProfile($profileOption);
         }
 
         $profileName = $credentials->getActiveProfileName();

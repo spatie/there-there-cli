@@ -5,28 +5,10 @@ use App\Services\CredentialStore;
 use GuzzleHttp\Psr7\Request;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir().'/there-there-test-'.uniqid();
-    mkdir($this->tempDir, 0755, true);
-
-    $this->configPath = $this->tempDir.'/config.json';
-
-    $this->store = new CredentialStore;
-    $reflection = new ReflectionClass($this->store);
-    $prop = $reflection->getProperty('configPath');
-    $prop->setValue($this->store, $this->configPath);
-
+    $this->store = makeTempCredentialStore();
     $this->app->instance(CredentialStore::class, $this->store);
 
     $this->provider = new AppServiceProvider($this->app);
-});
-
-afterEach(function () {
-    if (file_exists($this->configPath)) {
-        unlink($this->configPath);
-    }
-    if (is_dir($this->tempDir)) {
-        rmdir($this->tempDir);
-    }
 });
 
 it('attaches X-Workspace-Id when a workspace id is stored', function () {
