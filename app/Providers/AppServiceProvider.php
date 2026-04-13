@@ -6,8 +6,10 @@ use App\Services\CredentialStore;
 use App\Services\ThereThereDescriber;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use NunoMaduro\LaravelConsoleSummary\Contracts\DescriberContract;
+use Psr\Http\Message\RequestInterface;
 use Spatie\OpenApiCli\OpenApiCli;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->singleton(DescriberContract::class, ThereThereDescriber::class);
+
+        Http::globalRequestMiddleware($this->workspaceHeaderMiddleware(...));
 
         OpenApiCli::register(specPath: base_path('resources/openapi.yaml'))
             ->useOperationIds()
@@ -43,5 +47,16 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CredentialStore::class);
+    }
+
+    public function workspaceHeaderMiddleware(RequestInterface $request): RequestInterface
+    {
+        $workspaceId = app(CredentialStore::class)->getWorkspaceId();
+
+        if ($workspaceId === null) {
+            return $request;
+        }
+
+        return $request->withHeader('X-Workspace-Id', (string) $workspaceId);
     }
 }

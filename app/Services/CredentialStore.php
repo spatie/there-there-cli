@@ -47,6 +47,23 @@ class CredentialStore
         return $this->getProfileData()['workspace_name'] ?? null;
     }
 
+    public function getWorkspaceId(): ?int
+    {
+        $id = $this->getProfileData()['workspace_id'] ?? null;
+
+        return $id !== null ? (int) $id : null;
+    }
+
+    public function setWorkspaceId(int $workspaceId): void
+    {
+        $profileName = $this->getActiveProfileName();
+
+        $data = $this->readConfig();
+        $data['profiles'][$profileName]['workspace_id'] = $workspaceId;
+
+        $this->writeConfig($data);
+    }
+
     public function setUser(string $name, string $workspace): void
     {
         $profileName = $this->getActiveProfileName();

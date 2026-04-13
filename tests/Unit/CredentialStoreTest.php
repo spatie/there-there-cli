@@ -165,3 +165,33 @@ it('stores base url per profile', function () {
     $store->setActiveProfile('prod');
     expect($store->getBaseUrl())->toBe('https://there-there.app/api');
 });
+
+it('returns null workspace id when not set', function () {
+    $store = createStore($this->configPath);
+
+    expect($store->getWorkspaceId())->toBeNull();
+});
+
+it('stores and retrieves a workspace id', function () {
+    $store = createStore($this->configPath);
+    $store->setActiveProfile('spatie');
+    $store->setWorkspaceId(42);
+
+    expect($store->getWorkspaceId())->toBe(42);
+});
+
+it('stores workspace ids independently per profile', function () {
+    $store = createStore($this->configPath);
+
+    $store->setActiveProfile('spatie');
+    $store->setWorkspaceId(1);
+
+    $store->setActiveProfile('ohdear');
+    $store->setWorkspaceId(2);
+
+    $store->setActiveProfile('spatie');
+    expect($store->getWorkspaceId())->toBe(1);
+
+    $store->setActiveProfile('ohdear');
+    expect($store->getWorkspaceId())->toBe(2);
+});

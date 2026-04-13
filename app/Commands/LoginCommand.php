@@ -52,14 +52,20 @@ class LoginCommand extends Command
             return self::FAILURE;
         }
 
-        $name = $response->json('user.name', 'unknown');
-        $workspace = $response->json('workspace.name', 'unknown');
+        $name = $response->json('data.user.name', 'unknown');
+        $workspace = $response->json('data.workspace.name', 'unknown');
+        $workspaceId = $response->json('data.workspace.id');
 
         $profileName = $this->option('profile') ?? Str::slug($workspace);
 
         $credentials->setActiveProfile($profileName);
         $credentials->setToken($token);
         $credentials->setUser($name, $workspace);
+
+        if ($workspaceId !== null) {
+            $credentials->setWorkspaceId((int) $workspaceId);
+        }
+
         $credentials->setDefaultProfile($profileName);
 
         $this->newLine();
