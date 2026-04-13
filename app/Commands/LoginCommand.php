@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Concerns\RendersBanner;
 use App\Services\CredentialStore;
+use App\Support\LocalHostDetector;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -36,10 +37,16 @@ class LoginCommand extends Command
             return self::FAILURE;
         }
 
+        $options = ['allow_redirects' => true];
+
+        if (LocalHostDetector::isLocal($baseUrl)) {
+            $options['verify'] = false;
+        }
+
         try {
             $response = Http::withToken($token)
                 ->accept('application/json')
-                ->withOptions(['allow_redirects' => true, 'verify' => false])
+                ->withOptions($options)
                 ->get("{$baseUrl}/me");
         } catch (ConnectionException $e) {
             $this->error('Could not connect to There There. Please check your internet connection.');

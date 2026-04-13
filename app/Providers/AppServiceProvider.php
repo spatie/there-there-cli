@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\CredentialStore;
 use App\Services\ThereThereDescriber;
+use App\Support\LocalHostDetector;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -22,6 +23,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DescriberContract::class, ThereThereDescriber::class);
 
         Http::globalRequestMiddleware($this->workspaceHeaderMiddleware(...));
+
+        Http::globalOptions(function () {
+            $baseUrl = app(CredentialStore::class)->getBaseUrl();
+
+            if (LocalHostDetector::isLocal($baseUrl)) {
+                return ['verify' => false];
+            }
+
+            return [];
+        });
 
         OpenApiCli::register(specPath: base_path('resources/openapi.yaml'))
             ->useOperationIds()
