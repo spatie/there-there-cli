@@ -5,7 +5,7 @@
 
 A command-line tool for [There There](https://there-there.app), interact with the There There API from your terminal.
 
-Full documentation is available at [there-there.com](https://there-there.com).
+Full documentation is available at [there-there.app](https://there-there.app).
 
 ## Installation
 
