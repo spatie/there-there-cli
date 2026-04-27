@@ -1138,7 +1138,7 @@ paths:
                 description: { type: string, nullable: true }
                 trigger_type:
                   type: string
-                  enum: [automatic, manual]
+                  enum: [on_new_ticket, on_inbound_message, manual]
                 condition_match_type:
                   type: string
                   enum: [all, any]
@@ -1200,7 +1200,7 @@ paths:
               properties:
                 name: { type: string }
                 description: { type: string, nullable: true }
-                trigger_type: { type: string, enum: [automatic, manual] }
+                trigger_type: { type: string, enum: [on_new_ticket, on_inbound_message, manual] }
                 condition_match_type: { type: string, enum: [all, any] }
                 is_enabled: { type: boolean }
                 conditions:
@@ -1651,7 +1651,7 @@ components:
         description: { type: string, nullable: true }
         trigger_type:
           type: string
-          enum: [automatic, manual]
+          enum: [on_new_ticket, on_inbound_message, manual]
         condition_match_type:
           type: string
           enum: [all, any]
@@ -1728,6 +1728,24 @@ components:
               url: { type: string, format: uri }
               size: { type: integer }
               mime_type: { type: string }
+        inline_images:
+          type: array
+          description: |
+            Images embedded inside `body_html` (typically bug screenshots
+            customers paste into emails). Each item exposes a stable
+            `url` matching the `<img src>` in the body, plus a
+            `download_url` that forces a file download. Use these URLs
+            with the same Bearer token to fetch the binary.
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              name: { type: string }
+              mime_type: { type: string }
+              size: { type: integer }
+              content_id: { type: string, nullable: true }
+              url: { type: string, format: uri }
+              download_url: { type: string, format: uri }
         is_forward: { type: boolean }
         send_status: { type: string, nullable: true }
         created_at: { type: string, format: date-time }

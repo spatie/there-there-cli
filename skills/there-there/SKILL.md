@@ -253,6 +253,7 @@ there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
 All commands return JSON. When presenting results to the user:
 
 - **Tickets**: Show as a table with columns: subject, status, channel, assignee, tags, last message preview, updated at.
-- **Messages**: Show sender, type (inbound/outbound/note), body preview, attachments count, timestamp.
+- **Messages**: Show sender, type (inbound/outbound/note), body preview, attachments count, inline-image count, timestamp.
+- **Inline images**: Customer-pasted screenshots come back on each message under `inline_images[]`. Their `url` and `download_url` need the same Bearer token as the API; see [references/commands.md](references/commands.md#show-ticket) for a `curl` snippet.
 - **Contacts**: Show name, email, ticket count, last activity.
 - **Activities**: Show type, user, description, timestamp.

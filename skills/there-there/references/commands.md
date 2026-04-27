@@ -128,7 +128,14 @@ there-there show-ticket --ticket=ULID
 |---|---|---|
 | `--ticket` | string | Ticket ULID |
 
-**Response:** Full ticket with `messages[]` and `activities[]`. Each message has: `id`, `ulid`, `type` (inbound/outbound/note), `body_html`, `sender`, `attachments[]`, `is_forward`, `created_at`. Each activity has: `id`, `type`, `user`, `properties`, `description`, `created_at`.
+**Response:** Full ticket with `messages[]` and `activities[]`. Each message has: `id`, `ulid`, `type` (inbound/outbound/note), `body_html`, `sender`, `attachments[]`, `inline_images[]`, `is_forward`, `created_at`. Each activity has: `id`, `type`, `user`, `properties`, `description`, `created_at`.
+
+**Inline images:** `inline_images[]` exposes images embedded inside `body_html` (typically bug screenshots customers paste into emails). Each item has `id`, `name`, `mime_type`, `size`, `content_id`, `url` (matches the `<img src>` in the body), and `download_url`. Fetch the bytes with the same Bearer token the CLI uses (stored in `~/.there-there/config.json` under the active profile):
+
+```bash
+TOKEN=$(jq -r '.profiles[.default_profile].token' ~/.there-there/config.json)
+curl -L -H "Authorization: Bearer $TOKEN" "$URL" -o screenshot.png
+```
 
 ### update-ticket-status
 
