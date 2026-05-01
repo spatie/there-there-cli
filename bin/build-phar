@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#
+# Build builds/there-there from source.
+#
+# laravel-zero resolves `'version' => app('git.version')` at boot, which spawns
+# `git describe` with the PHAR's `phar://` URL as the cwd. In a source checkout
+# that works fine, but inside the compiled PHAR `posix_spawn` cannot chdir to a
+# `phar://` path, so the binary blows up before any command runs. To avoid that
+# we temporarily bake the version into config/app.php, run `box compile`, then
+# restore the original source.
+#
+# Usage:
+#   bin/build-phar              # uses the latest git tag
+#   bin/build-phar 0.7.0        # uses the explicit version
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+VERSION="${1:-}"
+if [ -z "$VERSION" ]; then
+    VERSION="$(git describe --tags --abbrev=0 2>/dev/null || echo unreleased)"
+fi
+
+if ! command -v box >/dev/null 2>&1; then
+    echo "Error: box is not on PATH. Install with: composer global require humbug/box" >&2
+    exit 1
+fi
+
+if [ ! -d vendor/laravel-zero ]; then
+    echo "Error: vendor/ is missing. Run: composer install" >&2
+    exit 1
+fi
+
+CONFIG="config/app.php"
+BACKUP="$(mktemp)"
+cp "$CONFIG" "$BACKUP"
+trap 'mv "$BACKUP" "$CONFIG"' EXIT
+
+perl -i -pe "s|'version' => app\\('git\\.version'\\)|'version' => '$VERSION'|" "$CONFIG"
+
+if ! grep -q "'version' => '$VERSION'" "$CONFIG"; then
+    echo "Error: failed to bake version into $CONFIG" >&2
+    exit 1
+fi
+
+rm -f there-there.phar
+box compile
+
+mkdir -p builds
+mv there-there.phar builds/there-there
+
+echo
+echo "Built builds/there-there (version: $VERSION)"
+echo "Verify with: ./builds/there-there --version"

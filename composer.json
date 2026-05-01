@@ -41,7 +41,8 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
-        "format": "vendor/bin/pint"
+        "format": "vendor/bin/pint",
+        "build-phar": "bin/build-phar"
     },
     "config": {
         "preferred-install": "dist",
