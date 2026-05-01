@@ -59,7 +59,7 @@ Read the messages to understand the customer's issue. Check the activities to se
 | Situation | Action |
 |---|---|
 | Can answer immediately | `there-there reply-to-ticket --ticket=ULID --field body="<p>Your reply</p>"` |
-| Needs someone else | `there-there update-ticket-assignee --ticket=ULID --field assignee_id=USER_ID` |
+| Needs someone else | `there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=USER_ULID` |
 | Issue is resolved | `there-there update-ticket-status --ticket=ULID --field status=closed` |
 | Needs internal discussion | `there-there add-note-to-ticket --ticket=ULID --field body="<p>Note for team</p>"` |
 | Should be tagged | `there-there add-tag-to-ticket --ticket=ULID --tag=TAG_ULID` |
@@ -120,11 +120,11 @@ there-there list-tickets --filter-created-after=2026-03-01 --filter-status=open
 ### Filter by specific assignee
 
 ```bash
-# List workspace members to find user IDs
+# List workspace members to find user ULIDs
 there-there list-members
 
 # Filter by assignee
-there-there list-tickets --filter-assigned-user-id=5
+there-there list-tickets --filter-assigned-user-ulid=USER_ULID
 ```
 
 ---
@@ -201,14 +201,14 @@ Currently, use the contact's email to search for their tickets or view the conta
 ### Assign tickets to team members
 
 ```bash
-# List workspace members to find user IDs
+# List workspace members to find user ULIDs
 there-there list-members
 
 # Assign a ticket
-there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
+there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=USER_ULID
 
 # Assign to a team
-there-there update-ticket-team --ticket=ULID --field team_id=3
+there-there update-ticket-team --ticket=ULID --field team_ulid=TEAM_ULID
 ```
 
 ### Tag tickets for organization

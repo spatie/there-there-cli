@@ -99,13 +99,13 @@ there-there list-tickets
 | Parameter | Type | Description |
 |---|---|---|
 | `--filter-status` | string | Filter by status (comma separated): `open`, `closed`, `spam` |
-| `--filter-tag-ids` | string | Filter by tag IDs (comma separated) |
-| `--filter-channel-ids` | string | Filter by channel IDs (comma separated) |
+| `--filter-tag-ulids` | string | Filter by tag ULIDs (comma separated) |
+| `--filter-channel-ulids` | string | Filter by channel ULIDs (comma separated) |
 | `--filter-assigned-to-me` | boolean | Only tickets assigned to the authenticated user |
 | `--filter-unassigned` | boolean | Only unassigned tickets |
 | `--q` | string | Semantic search query. Uses AI embeddings to find tickets by meaning. Results ordered by relevance. |
 | `--filter-search` | string | Full-text keyword search across subjects, messages, and contact info |
-| `--filter-assigned-user-id` | integer | Filter by specific assignee user ID |
+| `--filter-assigned-user-ulid` | string | Filter by specific assignee user ULID |
 | `--filter-created-after` | string | Only tickets created on or after this date (ISO 8601, e.g. `2026-01-01`) |
 | `--filter-created-before` | string | Only tickets created on or before this date (ISO 8601, e.g. `2026-03-01`) |
 | `--sort` | string | Sort field. Prefix with `-` for descending. Allowed: `created_at`, `updated_at`, `last_activity_at` |
@@ -162,7 +162,7 @@ there-there update-ticket-status --ticket=ULID --field status=closed
 Assign or unassign a user from a ticket.
 
 ```bash
-there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
+there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=USER_ULID
 ```
 
 **Required parameters:**
@@ -175,14 +175,14 @@ there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
 
 | Field | Type | Description |
 |---|---|---|
-| `assignee_id` | integer/null | User ID to assign, or `null` to unassign |
+| `assignee_ulid` | string/null | User ULID to assign, or `null` to unassign |
 
 ### update-ticket-team
 
 Assign or unassign a team from a ticket.
 
 ```bash
-there-there update-ticket-team --ticket=ULID --field team_id=3
+there-there update-ticket-team --ticket=ULID --field team_ulid=TEAM_ULID
 ```
 
 **Required parameters:**
@@ -195,7 +195,7 @@ there-there update-ticket-team --ticket=ULID --field team_id=3
 
 | Field | Type | Description |
 |---|---|---|
-| `team_id` | integer/null | Team ID to assign, or `null` to unassign |
+| `team_ulid` | string/null | Team ULID to assign, or `null` to unassign |
 
 ### add-tag-to-ticket
 
@@ -306,7 +306,7 @@ there-there forward-ticket --ticket=ULID --field body="<p>FYI</p>" --field to_re
 |---|---|---|
 | `cc_recipients` | array | CC email addresses |
 | `bcc_recipients` | array | BCC email addresses |
-| `forwarded_from_message_id` | integer | ID of the original message being forwarded |
+| `forwarded_from_message_ulid` | string | ULID of the original message being forwarded |
 
 ### add-note-to-ticket
 

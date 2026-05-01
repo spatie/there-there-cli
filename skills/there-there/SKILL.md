@@ -94,7 +94,7 @@ there-there list-tickets
 there-there list-tickets --filter-status=open
 
 # Filter by channel or tags
-there-there list-tickets --filter-channel-ids=1 --filter-tag-ids=1,2
+there-there list-tickets --filter-channel-ulids=CHANNEL_ULID --filter-tag-ulids=TAG_ULID1,TAG_ULID2
 
 # Only my tickets
 there-there list-tickets --filter-assigned-to-me=true
@@ -112,7 +112,7 @@ there-there list-tickets --q="how do I get a refund"
 there-there list-tickets --filter-search="refund"
 
 # Filter by specific assignee
-there-there list-tickets --filter-assigned-user-id=5
+there-there list-tickets --filter-assigned-user-ulid=USER_ULID
 
 # Filter by date range
 there-there list-tickets --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
@@ -128,13 +128,13 @@ there-there list-tickets --q="billing issue" --filter-status=open --filter-creat
 there-there update-ticket-status --ticket=ULID --field status=closed
 
 # Assign to a user
-there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
+there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=USER_ULID
 
 # Unassign
-there-there update-ticket-assignee --ticket=ULID --field assignee_id=null
+there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=null
 
 # Assign to a team
-there-there update-ticket-team --ticket=ULID --field team_id=3
+there-there update-ticket-team --ticket=ULID --field team_ulid=TEAM_ULID
 
 # Add a tag
 there-there add-tag-to-ticket --ticket=ULID --tag=TAG_ULID
@@ -218,7 +218,7 @@ The `list-tickets` command supports two types of search plus date and assignee f
 
 - **`--q`** (semantic search): Uses AI embeddings to find tickets by meaning, not just keywords. Matches across subjects, summaries, and message content. Results are ordered by relevance. Requires AI to be enabled for the workspace (returns 422 if not). Can be combined with all other filters.
 - **`--filter-search`** (full-text search): Keyword search across ticket subjects, messages, and contact info. Faster than semantic search, good for finding exact terms or email addresses.
-- **`--filter-assigned-user-id`**: Filter by a specific user ID (use `list-members` to find IDs). Different from `--filter-assigned-to-me` which uses the authenticated user.
+- **`--filter-assigned-user-ulid`**: Filter by a specific user ULID (use `list-members` to find ULIDs). Different from `--filter-assigned-to-me` which uses the authenticated user.
 - **`--filter-created-after`**: Only return tickets created on or after this date. ISO 8601 format (e.g. `2026-01-01`).
 - **`--filter-created-before`**: Only return tickets created on or before this date. ISO 8601 format (e.g. `2026-03-01`).
 
@@ -235,7 +235,7 @@ there-there list-tickets --filter-search="invoice"
 there-there list-tickets --q="billing issue" --filter-status=open --filter-created-after=2026-01-01
 
 # Tickets from a specific user in a date range
-there-there list-tickets --filter-assigned-user-id=5 --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
+there-there list-tickets --filter-assigned-user-ulid=USER_ULID --filter-created-after=2026-01-01 --filter-created-before=2026-02-01
 ```
 
 ### Bulk operations
@@ -245,7 +245,7 @@ there-there list-tickets --filter-assigned-user-id=5 --filter-created-after=2026
 there-there list-tickets --filter-unassigned=true
 
 # Assign them
-there-there update-ticket-assignee --ticket=ULID --field assignee_id=5
+there-there update-ticket-assignee --ticket=ULID --field assignee_ulid=USER_ULID
 ```
 
 ## Output format

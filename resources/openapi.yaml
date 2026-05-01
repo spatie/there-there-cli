@@ -70,23 +70,23 @@ paths:
           in: query
           schema: { type: string }
           description: Comma-separated status values (open, waiting, closed, spam).
-        - name: filter[tag_ids]
+        - name: filter[tag_ulids]
           in: query
           schema: { type: string }
-          description: Comma-separated tag IDs.
-        - name: filter[channel_ids]
+          description: Comma-separated tag ULIDs.
+        - name: filter[channel_ulids]
           in: query
           schema: { type: string }
-          description: Comma-separated channel IDs.
+          description: Comma-separated channel ULIDs.
         - name: filter[assigned_to_me]
           in: query
           schema: { type: boolean }
         - name: filter[unassigned]
           in: query
           schema: { type: boolean }
-        - name: filter[assigned_user_id]
+        - name: filter[assigned_user_ulid]
           in: query
-          schema: { type: integer }
+          schema: { type: string }
         - name: filter[search]
           in: query
           schema: { type: string }
@@ -221,10 +221,10 @@ paths:
             schema:
               type: object
               properties:
-                assignee_id:
-                  type: integer
+                assignee_ulid:
+                  type: string
                   nullable: true
-                  description: User ID, or null to unassign.
+                  description: User ULID, or null to unassign.
       responses:
         '200':
           description: Updated ticket
@@ -250,9 +250,10 @@ paths:
             schema:
               type: object
               properties:
-                team_id:
-                  type: integer
+                team_ulid:
+                  type: string
                   nullable: true
+                  description: Team ULID, or null to unassign.
       responses:
         '200':
           description: Updated ticket
@@ -326,9 +327,10 @@ paths:
                 bcc_recipients:
                   type: array
                   items: { type: string, format: email }
-                forwarded_from_message_id:
-                  type: integer
+                forwarded_from_message_ulid:
+                  type: string
                   nullable: true
+                  description: ULID of the message being forwarded.
       responses:
         '201':
           description: Forward message created
@@ -840,9 +842,10 @@ paths:
                 role:
                   type: string
                   enum: [admin, member]
-                channel_ids:
+                channel_ulids:
                   type: array
-                  items: { type: integer }
+                  items: { type: string }
+                  description: Optional list of channel ULIDs to scope the member to.
       responses:
         '201':
           description: Invitation created
@@ -855,6 +858,7 @@ paths:
                     type: object
                     properties:
                       id: { type: integer }
+                      ulid: { type: string }
                       email: { type: string }
                       name: { type: string, nullable: true }
                       role: { type: string }
@@ -1015,13 +1019,13 @@ paths:
                   nullable: true
                 assigned_to_me: { type: boolean }
                 unassigned: { type: boolean }
-                assigned_user_id: { type: integer, nullable: true }
-                channel_ids:
+                assigned_user_ulid: { type: string, nullable: true }
+                channel_ulids:
                   type: array
-                  items: { type: integer }
-                tag_ids:
+                  items: { type: string }
+                tag_ulids:
                   type: array
-                  items: { type: integer }
+                  items: { type: string }
       responses:
         '201':
           description: Saved view created
@@ -1075,13 +1079,13 @@ paths:
                   nullable: true
                 assigned_to_me: { type: boolean }
                 unassigned: { type: boolean }
-                assigned_user_id: { type: integer, nullable: true }
-                channel_ids:
+                assigned_user_ulid: { type: string, nullable: true }
+                channel_ulids:
                   type: array
-                  items: { type: integer }
-                tag_ids:
+                  items: { type: string }
+                tag_ulids:
                   type: array
-                  items: { type: integer }
+                  items: { type: string }
       responses:
         '200':
           description: Updated saved view
@@ -1754,6 +1758,7 @@ components:
       type: object
       properties:
         id: { type: integer }
+        ulid: { type: string }
         type: { type: string }
         user:
           oneOf:

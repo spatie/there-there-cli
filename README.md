@@ -75,22 +75,22 @@ there-there list-tickets
 there-there list-tickets --q="refund request"
 there-there list-tickets --filter-search="billing"
 there-there list-tickets --filter-created-after=2026-01-01
-there-there show-ticket --ticket-id=<id>
-there-there reply-to-ticket --ticket-id=<id> --field body="Your reply here"
-there-there forward-ticket --ticket-id=<id> --field to="email@example.com"
-there-there add-note-to-ticket --ticket-id=<id> --field body="Internal note"
+there-there show-ticket --ticket=TICKET_ULID
+there-there reply-to-ticket --ticket=TICKET_ULID --field body="Your reply here"
+there-there forward-ticket --ticket=TICKET_ULID --field to_recipients='["email@example.com"]'
+there-there add-note-to-ticket --ticket=TICKET_ULID --field body="Internal note"
 
-there-there update-ticket-status --ticket-id=<id> --field status=closed
-there-there update-ticket-assignee --ticket-id=<id> --field member_id=<member-id>
-there-there update-ticket-team --ticket-id=<id> --field team_id=<team-id>
+there-there update-ticket-status --ticket=TICKET_ULID --field status=closed
+there-there update-ticket-assignee --ticket=TICKET_ULID --field assignee_ulid=USER_ULID
+there-there update-ticket-team --ticket=TICKET_ULID --field team_ulid=TEAM_ULID
 
-there-there add-tag-to-ticket --ticket-id=<id> --field tag_id=<tag-id>
-there-there remove-tag-from-ticket --ticket-id=<id> --tag-id=<tag-id>
+there-there add-tag-to-ticket --ticket=TICKET_ULID --tag=TAG_ULID
+there-there remove-tag-from-ticket --ticket=TICKET_ULID --tag=TAG_ULID
 
-there-there list-ticket-activities --ticket-id=<id>
+there-there list-ticket-activities --ticket=TICKET_ULID
 
 there-there list-contacts
-there-there show-contact --contact-id=<id>
+there-there show-contact --contact=CONTACT_ULID
 
 there-there list-channels
 there-there list-members
