@@ -1558,7 +1558,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v12.56.0",
+            "version": "v12.58.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -6338,16 +6338,16 @@
         },
         {
             "name": "spatie/laravel-openapi-cli",
-            "version": "1.0.2",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-openapi-cli.git",
-                "reference": "cfb33e2c8e25f59294207ff5dbd8863454e9ef18"
+                "reference": "0c4e1cb0d091f8c66be3596522d363f5fbe91626"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/cfb33e2c8e25f59294207ff5dbd8863454e9ef18",
-                "reference": "cfb33e2c8e25f59294207ff5dbd8863454e9ef18",
+                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/0c4e1cb0d091f8c66be3596522d363f5fbe91626",
+                "reference": "0c4e1cb0d091f8c66be3596522d363f5fbe91626",
                 "shasum": ""
             },
             "require": {
@@ -6406,7 +6406,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-openapi-cli/issues",
-                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.0.2"
+                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.2.0"
             },
             "funding": [
                 {
@@ -6414,7 +6414,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-20T14:47:19+00:00"
+            "time": "2026-04-28T06:44:50+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -7374,7 +7374,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.36.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -7433,7 +7433,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.36.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -8624,16 +8624,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v7.4.6",
+            "version": "v7.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "58751048de17bae71c5aa0d13cb19d79bca26391"
+                "reference": "c58fdf7b3d6c2995368264c49e4e8b05bcff2883"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/58751048de17bae71c5aa0d13cb19d79bca26391",
-                "reference": "58751048de17bae71c5aa0d13cb19d79bca26391",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/c58fdf7b3d6c2995368264c49e4e8b05bcff2883",
+                "reference": "c58fdf7b3d6c2995368264c49e4e8b05bcff2883",
                 "shasum": ""
             },
             "require": {
@@ -8676,7 +8676,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v7.4.6"
+                "source": "https://github.com/symfony/yaml/tree/v7.4.8"
             },
             "funding": [
                 {
@@ -8696,7 +8696,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-09T09:33:46+00:00"
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "ta-tikoma/phpunit-architecture-test",
@@ -8759,16 +8759,16 @@
         },
         {
             "name": "tempest/highlight",
-            "version": "2.17.1",
+            "version": "2.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tempestphp/highlight.git",
-                "reference": "5b5ef6848dafdfac59a03d9d816ff79ac908651a"
+                "reference": "b966e3d747888e94990934533d8ca4c368f667a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tempestphp/highlight/zipball/5b5ef6848dafdfac59a03d9d816ff79ac908651a",
-                "reference": "5b5ef6848dafdfac59a03d9d816ff79ac908651a",
+                "url": "https://api.github.com/repos/tempestphp/highlight/zipball/b966e3d747888e94990934533d8ca4c368f667a9",
+                "reference": "b966e3d747888e94990934533d8ca4c368f667a9",
                 "shasum": ""
             },
             "require": {
@@ -8806,7 +8806,7 @@
             "description": "Fast, extensible, server-side code highlighting",
             "support": {
                 "issues": "https://github.com/tempestphp/highlight/issues",
-                "source": "https://github.com/tempestphp/highlight/tree/2.17.1"
+                "source": "https://github.com/tempestphp/highlight/tree/2.22.0"
             },
             "funding": [
                 {
@@ -8814,7 +8814,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-13T12:23:59+00:00"
+            "time": "2026-04-21T06:27:04+00:00"
         },
         {
             "name": "theseer/tokenizer",
