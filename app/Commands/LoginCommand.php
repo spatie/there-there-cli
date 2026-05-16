@@ -25,7 +25,7 @@ class LoginCommand extends Command
         $baseUrl = $credentials->getBaseUrl();
         $appUrl = preg_replace('#/api$#', '', $baseUrl);
 
-        $tokenUrl = "{$appUrl}/app/settings/user/api-tokens";
+        $tokenUrl = "{$appUrl}/settings/account/api-tokens";
         $this->line("You can generate a token from your workspace settings at <href={$tokenUrl}>{$tokenUrl}</>");
         $this->newLine();
 
