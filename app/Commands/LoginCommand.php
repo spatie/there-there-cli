@@ -55,7 +55,18 @@ class LoginCommand extends Command
         }
 
         if (! $response->successful()) {
-            $this->error('Invalid API token.');
+            if ($response->status() === 401) {
+                $this->error('Invalid API token.');
+
+                return self::FAILURE;
+            }
+
+            $serverMessage = $response->json('message');
+            $detail = is_string($serverMessage) && $serverMessage !== ''
+                ? $serverMessage
+                : 'Unexpected response from There There.';
+
+            $this->error("Login failed (HTTP {$response->status()}): {$detail}");
 
             return self::FAILURE;
         }
