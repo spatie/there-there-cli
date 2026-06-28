@@ -1700,16 +1700,16 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v12.60.2",
+            "version": "v12.62.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "099fd9b56ccaf776facaa27699b960a3f2451127"
+                "reference": "c16fd7ba7d8e6b8f336639ceb6b7e1ff6ed0efb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/099fd9b56ccaf776facaa27699b960a3f2451127",
-                "reference": "099fd9b56ccaf776facaa27699b960a3f2451127",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/c16fd7ba7d8e6b8f336639ceb6b7e1ff6ed0efb5",
+                "reference": "c16fd7ba7d8e6b8f336639ceb6b7e1ff6ed0efb5",
                 "shasum": ""
             },
             "require": {
@@ -1744,7 +1744,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-02-20T14:37:40+00:00"
+            "time": "2026-06-09T13:20:54+00:00"
         },
         {
             "name": "illuminate/events",
@@ -6494,16 +6494,16 @@
         },
         {
             "name": "spatie/laravel-openapi-cli",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-openapi-cli.git",
-                "reference": "1217cbb74bd3cac2b288831c3823f49457e70233"
+                "reference": "05dd6e773364f2564ec8de77bb5096ab189d308b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/1217cbb74bd3cac2b288831c3823f49457e70233",
-                "reference": "1217cbb74bd3cac2b288831c3823f49457e70233",
+                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/05dd6e773364f2564ec8de77bb5096ab189d308b",
+                "reference": "05dd6e773364f2564ec8de77bb5096ab189d308b",
                 "shasum": ""
             },
             "require": {
@@ -6562,7 +6562,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-openapi-cli/issues",
-                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.3.0"
+                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.3.1"
             },
             "funding": [
                 {
@@ -6570,7 +6570,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-22T12:26:40+00:00"
+            "time": "2026-06-26T09:41:27+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -6862,16 +6862,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.7.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "50f59d1f3ca46d41ac911f97a78626b6756af35b"
+                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/50f59d1f3ca46d41ac911f97a78626b6756af35b",
-                "reference": "50f59d1f3ca46d41ac911f97a78626b6756af35b",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d",
+                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d",
                 "shasum": ""
             },
             "require": {
@@ -6909,7 +6909,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -6929,7 +6929,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-13T15:52:40+00:00"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -8784,16 +8784,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v7.4.12",
+            "version": "v7.4.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "8b6952b56ca6417f25f7a65758cadd0ce02edc51"
+                "reference": "f8f328665ace2370d1e10645b807ba1646dc7dcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/8b6952b56ca6417f25f7a65758cadd0ce02edc51",
-                "reference": "8b6952b56ca6417f25f7a65758cadd0ce02edc51",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/f8f328665ace2370d1e10645b807ba1646dc7dcc",
+                "reference": "f8f328665ace2370d1e10645b807ba1646dc7dcc",
                 "shasum": ""
             },
             "require": {
@@ -8836,7 +8836,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v7.4.12"
+                "source": "https://github.com/symfony/yaml/tree/v7.4.14"
             },
             "funding": [
                 {
@@ -8856,7 +8856,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-20T07:20:23+00:00"
+            "time": "2026-06-08T20:24:16+00:00"
         },
         {
             "name": "ta-tikoma/phpunit-architecture-test",
@@ -8919,16 +8919,16 @@
         },
         {
             "name": "tempest/highlight",
-            "version": "2.25.0",
+            "version": "2.26.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tempestphp/highlight.git",
-                "reference": "ec0bb3353912244bd04acb7155694d3ea352f53f"
+                "reference": "ad74f092a3d0cbee73f4a007d685cac46c8b0c46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tempestphp/highlight/zipball/ec0bb3353912244bd04acb7155694d3ea352f53f",
-                "reference": "ec0bb3353912244bd04acb7155694d3ea352f53f",
+                "url": "https://api.github.com/repos/tempestphp/highlight/zipball/ad74f092a3d0cbee73f4a007d685cac46c8b0c46",
+                "reference": "ad74f092a3d0cbee73f4a007d685cac46c8b0c46",
                 "shasum": ""
             },
             "require": {
@@ -8966,7 +8966,7 @@
             "description": "Fast, extensible, server-side code highlighting",
             "support": {
                 "issues": "https://github.com/tempestphp/highlight/issues",
-                "source": "https://github.com/tempestphp/highlight/tree/2.25.0"
+                "source": "https://github.com/tempestphp/highlight/tree/2.26.0"
             },
             "funding": [
                 {
@@ -8974,7 +8974,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-19T07:56:07+00:00"
+            "time": "2026-06-07T06:40:56+00:00"
         },
         {
             "name": "theseer/tokenizer",
