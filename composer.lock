@@ -6495,20 +6495,20 @@
         },
         {
             "name": "spatie/laravel-openapi-cli",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-openapi-cli.git",
-                "reference": "6689c2daab8da61bb782488ad17f84dd97eba098"
+                "reference": "e1323b0e25344f9e0d4bfa717da1782bdaa02b83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/6689c2daab8da61bb782488ad17f84dd97eba098",
-                "reference": "6689c2daab8da61bb782488ad17f84dd97eba098",
+                "url": "https://api.github.com/repos/spatie/laravel-openapi-cli/zipball/e1323b0e25344f9e0d4bfa717da1782bdaa02b83",
+                "reference": "e1323b0e25344f9e0d4bfa717da1782bdaa02b83",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^11.0||^12.0",
+                "illuminate/contracts": "^11.0||^12.0|^13.0",
                 "php": "^8.4",
                 "spatie/laravel-package-tools": "^1.16",
                 "symfony/yaml": "^7.0",
@@ -6518,7 +6518,7 @@
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.14",
                 "nunomaduro/collision": "^8.8",
-                "orchestra/testbench": "^10.0.0||^9.0.0",
+                "orchestra/testbench": "^10.0.0||^9.0.0|^11.0.0",
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-arch": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0",
@@ -6563,7 +6563,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-openapi-cli/issues",
-                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.4.0"
+                "source": "https://github.com/spatie/laravel-openapi-cli/tree/1.5.0"
             },
             "funding": [
                 {
@@ -6571,7 +6571,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-20T19:57:30+00:00"
+            "time": "2026-08-14T15:31:27+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
