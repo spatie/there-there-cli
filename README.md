@@ -119,18 +119,22 @@ composer test
 1. **Build the PHAR**:
 
     ```bash
-    php there-there app:build there-there --build-version=1.x.x
+    bin/build-phar 1.x.x
     ```
+
+    Use `bin/build-phar` rather than `app:build`. Laravel Zero resolves the version by shelling out to `git describe`, which cannot run from inside a compiled PHAR, so the script bakes the version into `config/app.php` for the build and restores it afterwards. Called without an argument it uses the latest git tag. Requires `box` (`composer global require humbug/box`).
 
 2. **Commit and push**:
 
     ```bash
     git add builds/there-there
-    git commit -m "Release v1.x.x"
+    git commit -m "Rebuild PHAR v1.x.x"
     git push origin main
     ```
 
 3. **Create a release** in the GitHub UI.
+
+The binary in `builds/` is what Composer installs, and nothing rebuilds it for you. Tagging without rebuilding ships the previous version's spec and commands, so always do step 1 before tagging, and check `./builds/there-there --version` matches what you are about to release.
 
 Users update with `composer global require spatie/there-there-cli`.
 
