@@ -130,12 +130,28 @@ there-there show-ticket --ticket=ULID
 
 **Response:** Full ticket with `messages[]` and `activities[]`. Each message has: `id`, `ulid`, `type` (inbound/outbound/note), `body_html`, `sender`, `attachments[]`, `inline_images[]`, `is_forward`, `created_at`. Each activity has: `id`, `type`, `user`, `properties`, `description`, `created_at`.
 
-**Inline images:** `inline_images[]` exposes images embedded inside `body_html` (typically bug screenshots customers paste into emails). Each item has `id`, `name`, `mime_type`, `size`, `content_id`, `url` (matches the `<img src>` in the body), and `download_url`. Fetch the bytes with the same Bearer token the CLI uses (stored in `~/.there-there/config.json` under the active profile):
+**Inline images:** `inline_images[]` exposes images embedded inside `body_html` (typically bug screenshots customers paste into emails). Each item has `id`, `name`, `mime_type`, `size`, `content_id`, `url` (matches the `<img src>` in the body), and `download_url`. Use `download-attachment` below, or fetch the URL directly with the same Bearer token the CLI uses (stored in `~/.there-there/config.json` under the active profile):
 
 ```bash
 TOKEN=$(jq -r '.profiles[.default_profile].token' ~/.there-there/config.json)
 curl -L -H "Authorization: Bearer $TOKEN" "$URL" -o screenshot.png
 ```
+
+### download-attachment
+
+Inspect an attachment or inline image.
+
+```bash
+there-there download-attachment --media=MEDIA_ULID
+```
+
+**Required parameters:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `--media` | string | Media ULID, the last segment of a `url` or `download_url` from `show-ticket` |
+
+This reports the content type, status and length rather than emitting the file, because every command in this CLI is generated from the API spec and formats its response for reading. **To save the bytes, use the `curl` snippet above**, which follows the storage redirect and writes a valid file.
 
 ### update-ticket-status
 

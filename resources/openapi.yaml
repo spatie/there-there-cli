@@ -23,8 +23,11 @@ tags:
   - name: Tickets
   - name: Ticket messages
   - name: Ticket tags
+  - name: Ticket custom fields
+  - name: Custom fields
   - name: Ticket activities
   - name: Contacts
+  - name: Companies
   - name: Tags
   - name: Channels
   - name: Teams
@@ -38,6 +41,7 @@ tags:
 paths:
   /me:
     get:
+      operationId: getMe
       tags: [Me]
       summary: Get authenticated user and workspace
       parameters:
@@ -62,6 +66,7 @@ paths:
 
   /tickets:
     get:
+      operationId: listTickets
       tags: [Tickets]
       summary: List tickets
       parameters:
@@ -78,6 +83,22 @@ paths:
           in: query
           schema: { type: string }
           description: Comma-separated channel ULIDs.
+        - name: filter[custom_fields][{customFieldUlid}]
+          in: query
+          schema: { type: string }
+          description: >
+            Comma-separated option ULIDs for the given custom field. Repeat the
+            parameter with a different field ULID to narrow further: options of
+            one field widen the result, separate fields narrow it. An option
+            ULID that does not exist matches nothing rather than being ignored.
+            Resolve both ULIDs with GET /custom-fields.
+        - name: include
+          in: query
+          schema: { type: string, example: custom_fields }
+          description: >
+            Comma-separated extras to embed. `custom_fields` adds each ticket's
+            custom field values, resolved once for the page. Opt-in, so payloads
+            do not grow for integrations that do not ask.
         - name: filter[assigned_to_me]
           in: query
           schema: { type: boolean }
@@ -112,6 +133,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthenticated'
     post:
+      operationId: createTicket
       tags: [Tickets]
       summary: Create a ticket
       parameters:
@@ -143,6 +165,11 @@ paths:
                     body:
                       type: string
                       description: HTML body of the first message.
+                    attachment_ids:
+                      type: array
+                      maxItems: 10
+                      items: { type: string, example: upl_screenshot_8f3c1a }
+                      description: Upload tokens from POST /attachments. Embed a token as <img src="cid:TOKEN"> in the body to render it inline.
       responses:
         '201':
           description: Ticket created
@@ -156,8 +183,217 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
 
+  /custom-fields:
+    get:
+      operationId: listCustomFields
+      tags: [Custom fields]
+      summary: List custom field definitions
+      description: >
+        Every ticket custom field defined in the workspace, with its options.
+        This is where an integration resolves a field or option name to the ulid
+        the ticket endpoints expect. Read only: fields are defined in the app.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+      responses:
+        '200':
+          description: Custom field definitions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/CustomFieldDefinition' }
+
+  /tickets/import:
+    post:
+      operationId: importTickets
+      tags: [Tickets]
+      summary: Import a historical ticket
+      description: >-
+        Backfills a past conversation with its original timestamps, status, and full
+        message thread. Nothing is sent or triggered: no email, workflows, notifications,
+        or automations run. Requires an admin token. Has its own rate limit of 300
+        requests per minute, separate from the standard API limit.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel, subject, status, from_contact, messages]
+              properties:
+                channel:
+                  type: string
+                  description: Channel ULID.
+                subject:
+                  type: string
+                  maxLength: 255
+                status:
+                  type: string
+                  enum: [open, waiting, closed, spam]
+                created_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  description: When the ticket was originally created. Must be in the past. Defaults to the earliest message.
+                closed_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  description: When the ticket was resolved. Must be in the past. Used only when status is closed.
+                external_id:
+                  type: string
+                  nullable: true
+                  maxLength: 255
+                  description: Your own identifier for the ticket. Re-importing the same external_id returns the existing ticket.
+                assignee_email:
+                  type: string
+                  format: email
+                  nullable: true
+                  description: Email of a workspace member to assign. Ignored unless it is an active member with access to the channel.
+                tags:
+                  type: array
+                  maxItems: 50
+                  items: { type: string }
+                  description: Tag names to attach. A tag is created if it does not exist yet.
+                from_contact:
+                  type: object
+                  required: [email]
+                  properties:
+                    email: { type: string, format: email }
+                    name: { type: string, nullable: true }
+                messages:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  description: The conversation, in chronological order.
+                  items:
+                    type: object
+                    required: [type, body]
+                    properties:
+                      type:
+                        type: string
+                        enum: [inbound, outbound, note]
+                      body:
+                        type: string
+                        description: HTML body of the message.
+                      created_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                        description: When the message was sent. Must be in the past. Defaults to the ticket created_at.
+                      author_email:
+                        type: string
+                        format: email
+                        nullable: true
+                        description: Email of the agent who wrote an outbound message or note.
+                      author_name:
+                        type: string
+                        nullable: true
+                        description: Display name of that agent, used when author_email is not a workspace member.
+                      external_id:
+                        type: string
+                        nullable: true
+                        maxLength: 255
+                        description: Your own identifier for the message, stored for correlation.
+                      attachment_ids:
+                        type: array
+                        maxItems: 10
+                        items: { type: string, example: upl_screenshot_8f3c1a }
+                        description: Upload tokens from POST /attachments. Embed a token as <img src="cid:TOKEN"> in the body to render it inline.
+      responses:
+        '201':
+          description: Ticket imported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /attachments:
+    post:
+      operationId: uploadAttachment
+      tags: [Ticket messages]
+      summary: Upload a file and receive a single-use token
+      description: >-
+        Streams a file to storage and returns an opaque token. Reference the token in
+        a message's attachment_ids (and, for inline images, embed it in the body as
+        <img src="cid:TOKEN">). Tokens are single-use, scoped to the creating API token,
+        and deleted ~30 minutes after upload if not used. Max 25 MB per file.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201':
+          description: File parked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/PendingAttachment' }
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          description: Upload rate limit or per-workspace parked cap exceeded
+
+  /attachments/{media}:
+    get:
+      operationId: downloadAttachment
+      tags: [Ticket messages]
+      summary: Download an attachment or inline image
+      description: >-
+        Returns the file itself, served inline under its own content type. The url and
+        download_url on a message's attachments and inline_images point here whenever the
+        ticket was fetched with an API token, so use those values rather than building
+        this URL yourself. Files kept on object storage answer with a redirect to a
+        short-lived storage URL, so follow redirects. No X-Workspace-Id header is needed:
+        the workspace is derived from the file.
+      parameters:
+        - name: media
+          in: path
+          required: true
+          description: ULID of the file, taken from a message's attachments or inline_images.
+          schema: { type: string }
+        - name: download
+          in: query
+          required: false
+          description: Set to 1 to receive a Content-Disposition attachment header instead of an inline one.
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: The file
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        '302':
+          description: Redirect to a short-lived object storage URL
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /tickets/{ticket}:
     get:
+      operationId: showTicket
       tags: [Tickets]
       summary: Show a ticket
       parameters:
@@ -180,6 +416,7 @@ paths:
 
   /tickets/{ticket}/status:
     put:
+      operationId: updateTicketStatus
       tags: [Tickets]
       summary: Change ticket status
       parameters:
@@ -209,6 +446,7 @@ paths:
 
   /tickets/{ticket}/assignee:
     put:
+      operationId: updateTicketAssignee
       tags: [Tickets]
       summary: Assign a user to a ticket
       parameters:
@@ -238,6 +476,7 @@ paths:
 
   /tickets/{ticket}/team:
     put:
+      operationId: updateTicketTeam
       tags: [Tickets]
       summary: Assign a team to a ticket
       parameters:
@@ -265,8 +504,46 @@ paths:
                   data:
                     $ref: '#/components/schemas/Ticket'
 
+  /tickets/{ticket}/channel:
+    put:
+      operationId: updateTicketChannel
+      tags: [Tickets]
+      summary: Move a ticket to another channel
+      description: >
+        Moves the ticket to another email channel in the same workspace. Anyone
+        without access to the target channel is unassigned and removed as a
+        watcher. Support bubble conversations cannot be moved, and support
+        bubble channels cannot be moved into.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - $ref: '#/components/parameters/TicketUlid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel_ulid]
+              properties:
+                channel_ulid:
+                  type: string
+                  description: ULID of the channel to move the ticket to.
+      responses:
+        '200':
+          description: Updated ticket
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '422':
+          description: The channel is not accessible, or the ticket cannot be moved.
+
   /tickets/{ticket}/reply:
     post:
+      operationId: replyToTicket
       tags: [Ticket messages]
       summary: Reply to a ticket
       parameters:
@@ -290,6 +567,11 @@ paths:
                 bcc_recipients:
                   type: array
                   items: { type: string, format: email }
+                attachment_ids:
+                  type: array
+                  maxItems: 10
+                  items: { type: string, example: upl_screenshot_8f3c1a }
+                  description: Upload tokens from POST /attachments. Embed a token as <img src="cid:TOKEN"> in the body to render it inline.
       responses:
         '201':
           description: Message created
@@ -303,6 +585,7 @@ paths:
 
   /tickets/{ticket}/forward:
     post:
+      operationId: forwardTicket
       tags: [Ticket messages]
       summary: Forward a ticket
       parameters:
@@ -331,6 +614,11 @@ paths:
                   type: string
                   nullable: true
                   description: ULID of the message being forwarded.
+                attachment_ids:
+                  type: array
+                  maxItems: 10
+                  items: { type: string, example: upl_screenshot_8f3c1a }
+                  description: Upload tokens from POST /attachments. Embed a token as <img src="cid:TOKEN"> in the body to render it inline.
       responses:
         '201':
           description: Forward message created
@@ -344,6 +632,7 @@ paths:
 
   /tickets/{ticket}/note:
     post:
+      operationId: addNoteToTicket
       tags: [Ticket messages]
       summary: Add an internal note
       parameters:
@@ -358,6 +647,11 @@ paths:
               required: [body]
               properties:
                 body: { type: string }
+                attachment_ids:
+                  type: array
+                  maxItems: 10
+                  items: { type: string, example: upl_screenshot_8f3c1a }
+                  description: Upload tokens from POST /attachments. Embed a token as <img src="cid:TOKEN"> in the body to render it inline.
       responses:
         '201':
           description: Note message created
@@ -371,6 +665,7 @@ paths:
 
   /tickets/{ticket}/tags/{tag}:
     post:
+      operationId: addTagToTicket
       tags: [Ticket tags]
       summary: Add a tag to a ticket
       parameters:
@@ -392,6 +687,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/Ticket'
     delete:
+      operationId: removeTagFromTicket
       tags: [Ticket tags]
       summary: Remove a tag from a ticket
       parameters:
@@ -405,8 +701,63 @@ paths:
         '204':
           description: Tag removed
 
+  /tickets/{ticket}/custom-fields/{customField}:
+    put:
+      operationId: setTicketCustomField
+      tags: [Ticket custom fields]
+      summary: Set a custom field on a ticket
+      description: >
+        Replaces the ticket's value for one custom field. Send `value` for a text
+        field and `option_ulids` for the two select types; sending both, or the
+        wrong one for the field's type, is a validation error. An empty `value`
+        and an empty `option_ulids` clears the field. Returns 404 when the field
+        belongs to another workspace or is not available on the ticket's channel.
+        Read the current values from GET /tickets/{ticket}, which returns the
+        fields that apply to the ticket whether or not they hold a value.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - $ref: '#/components/parameters/TicketUlid'
+        - name: customField
+          in: path
+          required: true
+          schema: { type: string }
+          description: Custom field ULID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value, option_ulids]
+              properties:
+                value:
+                  type: string
+                  nullable: true
+                  description: The text for a text field, or null. Must be null for select fields.
+                  example: 1.2.3
+                option_ulids:
+                  type: array
+                  items: { type: string }
+                  description: >
+                    The option ULIDs that should end up selected, which replaces the
+                    current selection rather than adding to it. At most one for a
+                    single-select field. Must be empty for text fields.
+      responses:
+        '200':
+          description: Updated ticket, including its custom fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
   /tickets/{ticket}/activities:
     get:
+      operationId: listTicketActivities
       tags: [Ticket activities]
       summary: List ticket activities
       parameters:
@@ -423,6 +774,7 @@ paths:
 
   /contacts:
     get:
+      operationId: listContacts
       tags: [Contacts]
       summary: List contacts
       parameters:
@@ -451,6 +803,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedContacts'
     post:
+      operationId: createContact
       tags: [Contacts]
       summary: Create a contact
       parameters:
@@ -478,6 +831,7 @@ paths:
 
   /contacts/{contact}:
     get:
+      operationId: showContact
       tags: [Contacts]
       summary: Show a contact
       parameters:
@@ -493,6 +847,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Contact' }
     put:
+      operationId: updateContact
       tags: [Contacts]
       summary: Update a contact
       parameters:
@@ -508,6 +863,12 @@ paths:
                 email: { type: string, format: email }
                 name: { type: string, nullable: true }
                 notes: { type: string, nullable: true }
+                company_ulid:
+                  type: string
+                  nullable: true
+                  description: >-
+                    ULID of the company to attach the contact to. Send null to detach it.
+                    A ULID from another workspace returns 404.
       responses:
         '200':
           description: Updated contact
@@ -518,6 +879,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Contact' }
     delete:
+      operationId: deleteContact
       tags: [Contacts]
       summary: Delete a contact (admin only)
       parameters:
@@ -529,8 +891,143 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /companies:
+    get:
+      operationId: listCompanies
+      tags: [Companies]
+      summary: List companies
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - name: filter[name]
+          in: query
+          schema: { type: string }
+        - name: filter[domain]
+          in: query
+          schema: { type: string }
+        - name: filter[search]
+          in: query
+          description: Matches the company name or its domain.
+          schema: { type: string }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, -name, created_at, -created_at, contact_count, -contact_count, ticket_count, -ticket_count]
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Paginated list of companies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCompanies'
+    post:
+      operationId: createCompany
+      tags: [Companies]
+      summary: Create a company
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+                domain:
+                  type: string
+                  nullable: true
+                  description: >-
+                    Bare hostname, lowercased. Unique per workspace. An email address,
+                    a scheme, or a path is rejected.
+                phone: { type: string, nullable: true }
+                notes: { type: string, nullable: true }
+                contact_ulids:
+                  type: array
+                  description: >-
+                    Contacts to attach to the new company. A ULID from another workspace
+                    is ignored.
+                  items: { type: string }
+      responses:
+        '201':
+          description: Company created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Company' }
+
+  /companies/{company}:
+    get:
+      operationId: showCompany
+      tags: [Companies]
+      summary: Show a company
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - $ref: '#/components/parameters/CompanyUlid'
+      responses:
+        '200':
+          description: Company
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Company' }
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      operationId: updateCompany
+      tags: [Companies]
+      summary: Update a company
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - $ref: '#/components/parameters/CompanyUlid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                domain:
+                  type: string
+                  nullable: true
+                  description: >-
+                    Changing the domain does not move contacts that already exist.
+                phone: { type: string, nullable: true }
+                notes: { type: string, nullable: true }
+      responses:
+        '200':
+          description: Updated company
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/Company' }
+    delete:
+      operationId: deleteCompany
+      tags: [Companies]
+      summary: Delete a company
+      description: The contacts of the company are kept and simply detached.
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceHeader'
+        - $ref: '#/components/parameters/CompanyUlid'
+      responses:
+        '204':
+          description: Company deleted
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /tags:
     get:
+      operationId: listTags
       tags: [Tags]
       summary: List workspace tags
       parameters:
@@ -547,6 +1044,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/Tag' }
     post:
+      operationId: createTag
       tags: [Tags]
       summary: Create a tag (admin only)
       parameters:
@@ -575,6 +1073,7 @@ paths:
 
   /tags/{tag}:
     get:
+      operationId: showTag
       tags: [Tags]
       summary: Show a tag
       parameters:
@@ -590,6 +1089,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Tag' }
     put:
+      operationId: updateTag
       tags: [Tags]
       summary: Update a tag (admin only)
       parameters:
@@ -617,6 +1117,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Tag' }
     delete:
+      operationId: deleteTag
       tags: [Tags]
       summary: Delete a tag (admin only)
       parameters:
@@ -628,6 +1129,7 @@ paths:
 
   /channels:
     get:
+      operationId: listChannels
       tags: [Channels]
       summary: List accessible channels
       parameters:
@@ -646,6 +1148,7 @@ paths:
 
   /channels/{channel}:
     get:
+      operationId: showChannel
       tags: [Channels]
       summary: Show a channel
       parameters:
@@ -666,6 +1169,7 @@ paths:
 
   /teams:
     get:
+      operationId: listTeams
       tags: [Teams]
       summary: List workspace teams
       parameters:
@@ -682,6 +1186,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/Team' }
     post:
+      operationId: createTeam
       tags: [Teams]
       summary: Create a team (admin only)
       parameters:
@@ -708,6 +1213,7 @@ paths:
 
   /teams/{team}:
     get:
+      operationId: showTeam
       tags: [Teams]
       summary: Show a team
       parameters:
@@ -726,6 +1232,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Team' }
     put:
+      operationId: updateTeam
       tags: [Teams]
       summary: Update a team (admin only)
       parameters:
@@ -752,6 +1259,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Team' }
     delete:
+      operationId: deleteTeam
       tags: [Teams]
       summary: Delete a team (admin only)
       parameters:
@@ -766,6 +1274,7 @@ paths:
 
   /teams/{team}/members/{user}:
     post:
+      operationId: addTeamMember
       tags: [Teams]
       summary: Add a member to a team (admin only)
       parameters:
@@ -789,6 +1298,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Team' }
     delete:
+      operationId: removeTeamMember
       tags: [Teams]
       summary: Remove a member from a team (admin only)
       parameters:
@@ -807,6 +1317,7 @@ paths:
 
   /members:
     get:
+      operationId: listMembers
       tags: [Members]
       summary: List workspace members
       parameters:
@@ -825,6 +1336,7 @@ paths:
 
   /members/invite:
     post:
+      operationId: inviteMember
       tags: [Members]
       summary: Invite a member (admin only)
       parameters:
@@ -866,6 +1378,7 @@ paths:
 
   /members/{user}:
     delete:
+      operationId: removeMember
       tags: [Members]
       summary: Remove a member from the workspace
       parameters:
@@ -880,6 +1393,7 @@ paths:
 
   /quick-replies:
     get:
+      operationId: listQuickReplies
       tags: [Quick replies]
       summary: List quick replies
       parameters:
@@ -896,6 +1410,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/QuickReply' }
     post:
+      operationId: createQuickReply
       tags: [Quick replies]
       summary: Create a quick reply
       parameters:
@@ -922,6 +1437,7 @@ paths:
 
   /quick-replies/{quickReply}:
     get:
+      operationId: showQuickReply
       tags: [Quick replies]
       summary: Show a quick reply
       parameters:
@@ -940,6 +1456,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/QuickReply' }
     put:
+      operationId: updateQuickReply
       tags: [Quick replies]
       summary: Update a quick reply
       parameters:
@@ -966,6 +1483,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/QuickReply' }
     delete:
+      operationId: deleteQuickReply
       tags: [Quick replies]
       summary: Delete a quick reply
       parameters:
@@ -980,6 +1498,7 @@ paths:
 
   /saved-views:
     get:
+      operationId: listSavedViews
       tags: [Saved views]
       summary: List saved ticket views
       parameters:
@@ -996,6 +1515,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/SavedView' }
     post:
+      operationId: createSavedView
       tags: [Saved views]
       summary: Create a saved ticket view
       description: Personal views are created by default. Set `is_personal` to false to create a workspace-level view (admin only).
@@ -1038,6 +1558,7 @@ paths:
 
   /saved-views/{savedTicketView}:
     get:
+      operationId: showSavedView
       tags: [Saved views]
       summary: Show a saved view
       parameters:
@@ -1056,6 +1577,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/SavedView' }
     put:
+      operationId: updateSavedView
       tags: [Saved views]
       summary: Update a saved view
       parameters:
@@ -1096,6 +1618,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/SavedView' }
     delete:
+      operationId: deleteSavedView
       tags: [Saved views]
       summary: Delete a saved view
       parameters:
@@ -1110,6 +1633,7 @@ paths:
 
   /workflows:
     get:
+      operationId: listWorkflows
       tags: [Workflows]
       summary: List workflows
       parameters:
@@ -1126,6 +1650,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/Workflow' }
     post:
+      operationId: createWorkflow
       tags: [Workflows]
       summary: Create a workflow (admin only)
       parameters:
@@ -1142,7 +1667,15 @@ paths:
                 description: { type: string, nullable: true }
                 trigger_type:
                   type: string
-                  enum: [on_new_ticket, on_inbound_message, manual]
+                  enum: [on_new_ticket, on_inbound_message, on_no_reply, manual]
+                trigger_parameters:
+                  type: object
+                  nullable: true
+                  description: Required for on_no_reply. The unit defaults to hours. Durations are capped at 30 days in total. With only_business_hours, minutes and hours pause outside workspace business hours, and days count business days; fully closed days do not count.
+                  properties:
+                    value: { type: integer, minimum: 1 }
+                    unit: { type: string, enum: [minutes, hours, days], default: hours }
+                    only_business_hours: { type: boolean, default: false }
                 condition_match_type:
                   type: string
                   enum: [all, any]
@@ -1170,6 +1703,7 @@ paths:
 
   /workflows/{workflow}:
     get:
+      operationId: showWorkflow
       tags: [Workflows]
       summary: Show a workflow
       parameters:
@@ -1188,6 +1722,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Workflow' }
     put:
+      operationId: updateWorkflow
       tags: [Workflows]
       summary: Update a workflow (admin only)
       parameters:
@@ -1204,7 +1739,15 @@ paths:
               properties:
                 name: { type: string }
                 description: { type: string, nullable: true }
-                trigger_type: { type: string, enum: [on_new_ticket, on_inbound_message, manual] }
+                trigger_type: { type: string, enum: [on_new_ticket, on_inbound_message, on_no_reply, manual] }
+                trigger_parameters:
+                  type: object
+                  nullable: true
+                  description: Required for on_no_reply. The unit defaults to hours. Durations are capped at 30 days in total. With only_business_hours, minutes and hours pause outside workspace business hours, and days count business days; fully closed days do not count.
+                  properties:
+                    value: { type: integer, minimum: 1 }
+                    unit: { type: string, enum: [minutes, hours, days], default: hours }
+                    only_business_hours: { type: boolean, default: false }
                 condition_match_type: { type: string, enum: [all, any] }
                 is_enabled: { type: boolean }
                 conditions:
@@ -1225,6 +1768,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Workflow' }
     delete:
+      operationId: deleteWorkflow
       tags: [Workflows]
       summary: Delete a workflow (admin only)
       parameters:
@@ -1239,6 +1783,7 @@ paths:
 
   /brains:
     get:
+      operationId: listBrains
       tags: [Brains]
       summary: List brains
       parameters:
@@ -1255,6 +1800,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/Brain' }
     post:
+      operationId: createBrain
       tags: [Brains]
       summary: Create a brain (admin only)
       parameters:
@@ -1281,6 +1827,7 @@ paths:
 
   /brains/{brain}:
     get:
+      operationId: showBrain
       tags: [Brains]
       summary: Show a brain
       parameters:
@@ -1296,6 +1843,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Brain' }
     put:
+      operationId: updateBrain
       tags: [Brains]
       summary: Update a brain (admin only)
       parameters:
@@ -1321,6 +1869,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/Brain' }
     delete:
+      operationId: deleteBrain
       tags: [Brains]
       summary: Delete a brain (admin only)
       parameters:
@@ -1332,6 +1881,7 @@ paths:
 
   /brains/{brain}/articles:
     get:
+      operationId: listBrainArticles
       tags: [Brain articles]
       summary: List articles in a brain
       parameters:
@@ -1349,6 +1899,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/BrainArticle' }
     post:
+      operationId: createBrainArticle
       tags: [Brain articles]
       summary: Create an article in a brain (admin only)
       parameters:
@@ -1377,6 +1928,7 @@ paths:
 
   /brains/{brain}/articles/{article}:
     get:
+      operationId: showBrainArticle
       tags: [Brain articles]
       summary: Show an article
       parameters:
@@ -1396,6 +1948,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/BrainArticle' }
     put:
+      operationId: updateBrainArticle
       tags: [Brain articles]
       summary: Update an article (admin only)
       parameters:
@@ -1424,6 +1977,7 @@ paths:
                 properties:
                   data: { $ref: '#/components/schemas/BrainArticle' }
     delete:
+      operationId: deleteBrainArticle
       tags: [Brain articles]
       summary: Delete an article (admin only)
       parameters:
@@ -1478,6 +2032,12 @@ components:
       required: true
       schema: { type: string }
       description: Contact ULID.
+    CompanyUlid:
+      name: company
+      in: path
+      required: true
+      schema: { type: string }
+      description: Company ULID.
     TagUlid:
       name: tag
       in: path
@@ -1531,6 +2091,15 @@ components:
                   items: { type: string }
 
   schemas:
+    PendingAttachment:
+      type: object
+      properties:
+        token: { type: string, example: upl_screenshot_8f3c1a }
+        filename: { type: string, example: screenshot.png }
+        mime_type: { type: string, example: image/png }
+        size: { type: integer, example: 84213 }
+        expires_at: { type: string, format: date-time }
+
     User:
       type: object
       properties:
@@ -1576,9 +2145,33 @@ components:
         name: { type: string, nullable: true }
         email: { type: string, format: email }
         avatar_url: { type: string, nullable: true }
+        company:
+          nullable: true
+          description: The company this contact belongs to, or null.
+          allOf:
+            - $ref: '#/components/schemas/ContactCompany'
         ticket_count: { type: integer, nullable: true }
         last_activity_at: { type: string, format: date-time, nullable: true }
         notes: { type: string, nullable: true }
+
+    ContactCompany:
+      type: object
+      properties:
+        ulid: { type: string }
+        name: { type: string }
+        domain: { type: string, nullable: true }
+
+    Company:
+      type: object
+      properties:
+        id: { type: integer }
+        ulid: { type: string }
+        name: { type: string }
+        domain: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        notes: { type: string, nullable: true }
+        contact_count: { type: integer, nullable: true }
+        ticket_count: { type: integer, nullable: true }
 
     Team:
       type: object
@@ -1655,7 +2248,15 @@ components:
         description: { type: string, nullable: true }
         trigger_type:
           type: string
-          enum: [on_new_ticket, on_inbound_message, manual]
+          enum: [on_new_ticket, on_inbound_message, on_no_reply, manual]
+        trigger_parameters:
+          type: object
+          nullable: true
+          description: Present for on_no_reply workflows. The unit defaults to hours. Durations are capped at 30 days in total. With only_business_hours, minutes and hours pause outside workspace business hours, and days count business days; fully closed days do not count.
+          properties:
+            value: { type: integer, minimum: 1, description: 'Duration amount. Combined with unit, capped at 30 days in total.' }
+            unit: { type: string, enum: [minutes, hours, days], default: hours }
+            only_business_hours: { type: boolean, default: false }
         condition_match_type:
           type: string
           enum: [all, any]
@@ -1724,12 +2325,16 @@ components:
             avatar_url: { type: string, nullable: true }
         attachments:
           type: array
+          description: |
+            Files sent alongside the message. Fetch `url` (or `download_url`)
+            with the same Bearer token, see `GET /attachments/{media}`.
           items:
             type: object
             properties:
               id: { type: integer }
               name: { type: string }
               url: { type: string, format: uri }
+              download_url: { type: string, format: uri }
               size: { type: integer }
               mime_type: { type: string }
         inline_images:
@@ -1739,7 +2344,8 @@ components:
             customers paste into emails). Each item exposes a stable
             `url` matching the `<img src>` in the body, plus a
             `download_url` that forces a file download. Use these URLs
-            with the same Bearer token to fetch the binary.
+            with the same Bearer token to fetch the binary, see
+            `GET /attachments/{media}`.
           items:
             type: object
             properties:
@@ -1793,6 +2399,13 @@ components:
         tags:
           type: array
           items: { $ref: '#/components/schemas/Tag' }
+        custom_fields:
+          type: array
+          description: >
+            Every custom field that applies to this ticket's channel, whether or
+            not it holds a value. Returned on GET /tickets/{ticket} and on every
+            ticket write response; omitted from the paginated list.
+          items: { $ref: '#/components/schemas/TicketCustomField' }
         latest_message_preview: { type: string, nullable: true }
         summary: { type: string, nullable: true }
         title: { type: string, nullable: true }
@@ -1800,6 +2413,53 @@ components:
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
         last_activity_at: { type: string, format: date-time }
+
+    CustomFieldDefinition:
+      type: object
+      properties:
+        ulid: { type: string }
+        name: { type: string, example: Billable }
+        type:
+          type: string
+          enum: [text, single_select, multi_select]
+        all_channels:
+          type: boolean
+          description: When true the field applies to every channel and channel_ulids is empty.
+        channel_ulids:
+          type: array
+          items: { type: string }
+        options:
+          type: array
+          items: { $ref: '#/components/schemas/TicketCustomFieldOption' }
+
+    TicketCustomField:
+      type: object
+      properties:
+        ulid: { type: string }
+        name: { type: string, example: Reported version }
+        type:
+          type: string
+          enum: [text, single_select, multi_select]
+        value:
+          type: string
+          nullable: true
+          description: Set for text fields only; null for the two select types.
+        selected_option_ulids:
+          type: array
+          items: { type: string }
+          description: Empty for text fields and for select fields with no value.
+        options:
+          type: array
+          description: The options an admin defined, in the order they arranged them. Empty for text fields.
+          items: { $ref: '#/components/schemas/TicketCustomFieldOption' }
+
+    TicketCustomFieldOption:
+      type: object
+      properties:
+        ulid: { type: string }
+        name: { type: string, example: Laravel }
+        color: { type: string, nullable: true, example: '#FCA5A5' }
+        icon: { type: string, nullable: true, example: flame }
 
     TicketDetail:
       allOf:
@@ -1844,6 +2504,15 @@ components:
         data:
           type: array
           items: { $ref: '#/components/schemas/Contact' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+        links: { $ref: '#/components/schemas/PaginationLinks' }
+
+    PaginatedCompanies:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Company' }
         meta: { $ref: '#/components/schemas/PaginationMeta' }
         links: { $ref: '#/components/schemas/PaginationLinks' }
 
