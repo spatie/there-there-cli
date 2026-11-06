@@ -35,7 +35,14 @@ jobs:
           php --version
           composer --version
 
+      - name: Install dependencies
+        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+      - name: Run tests
+        run: vendor/bin/pest --ci --display-deprecations --display-phpunit-deprecations
+
       - name: Smoke test distributed PHAR
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           export HOME="$(mktemp -d)"
@@ -46,9 +53,3 @@ jobs:
           grep -E '^login[[:space:]]' "$HOME/commands.txt"
           grep -E '^list-tickets[[:space:]]' "$HOME/commands.txt"
           php builds/there-there show-ticket --help
-
-      - name: Install dependencies
-        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
-
-      - name: Run tests
-        run: vendor/bin/pest --ci --display-deprecations --display-phpunit-deprecations
