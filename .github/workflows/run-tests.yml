@@ -11,10 +11,10 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        php: [8.4, 8.5]
+        php: ['8.4', '8.5', '8.6']
         stability: [prefer-stable]
 
     name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
@@ -30,8 +30,28 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
 
+      - name: Show runtime versions
+        run: |
+          php --version
+          composer --version
+
       - name: Install dependencies
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Run tests
-        run: vendor/bin/pest --ci
+        run: vendor/bin/pest --ci --display-deprecations --display-phpunit-deprecations
+
+      - name: Smoke test distributed PHAR
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          export HOME="$(mktemp -d)"
+          export USERPROFILE="$HOME"
+          trap 'rm -rf "$HOME"' EXIT
+          php builds/there-there --version
+          php builds/there-there list --raw > "$HOME/commands.txt"
+          grep -E '^login[[:space:]]' "$HOME/commands.txt"
+          grep -E '^list-tickets[[:space:]]' "$HOME/commands.txt"
+          php builds/there-there show-ticket --help
+          php builds/there-there profiles > "$HOME/profiles.txt"
+          grep -F 'No profiles configured.' "$HOME/profiles.txt"

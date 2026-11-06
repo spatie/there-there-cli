@@ -119,8 +119,11 @@ composer test
 1. **Build the PHAR**:
 
     ```bash
+    composer install --prefer-dist
     bin/build-phar 1.x.x
     ```
+
+    Build from the committed lockfile, which keeps bundled dependencies compatible with PHP 8.4.0. Updating dependencies on a newer PHP version before building can raise the PHAR's minimum PHP requirement. CI updates source dependencies separately and smoke-tests the committed binary on supported PHP versions.
 
     Use `bin/build-phar` rather than `app:build`. Laravel Zero resolves the version by shelling out to `git describe`, which cannot run from inside a compiled PHAR, so the script bakes the version into `config/app.php` for the build and restores it afterwards. Called without an argument it uses the latest git tag. Requires `box` (`composer global require humbug/box`).
 
