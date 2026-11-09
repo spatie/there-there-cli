@@ -35,7 +35,13 @@ jobs:
           php --version
           composer --version
 
-      - name: Install dependencies
+      - name: Install locked dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run tests with locked dependencies
+        run: vendor/bin/pest --ci --display-deprecations --display-phpunit-deprecations
+
+      - name: Update dependencies
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Run tests
